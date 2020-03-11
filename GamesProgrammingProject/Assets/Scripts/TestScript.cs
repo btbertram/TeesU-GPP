@@ -24,6 +24,7 @@ public class TestScript : MonoBehaviour
         string testusername = "testUser1";
         string testpasscode = "12345";
 
+        CreateAccount(testusername, testpasscode, dbConnection);
         Debug.Log(VerifyAccount(testusername, testpasscode, dbConnection));
 
         //dataReader.Close();
@@ -84,8 +85,8 @@ public class TestScript : MonoBehaviour
         System.Guid guid = System.Guid.NewGuid();
 
         //Combine salt with newPasscode
-
-        byte[] encodedPasscode = System.Text.Encoding.ASCII.GetBytes(newPasscode + guid.ToString() + newUsername);
+        //ASCII works with db, unicode does not? Experiment.
+        byte[] encodedPasscode = System.Text.Encoding.ASCII.GetBytes(newPasscode + guid + newUsername);
 
         //Hash Salted Passcode
         ///Create Hashgen
@@ -93,6 +94,7 @@ public class TestScript : MonoBehaviour
         SHA256 sHA256 = SHA256.Create();
 
         byte[] computedHash = sHA256.ComputeHash(encodedPasscode);
+
         string finalHash = ByteArrayToString(computedHash);
       
         //Insert query to database - new entry in user account table
@@ -121,15 +123,24 @@ public class TestScript : MonoBehaviour
 
         while (dataReader.Read())
         {
-            salt = ByteArrayToString(dataReader.GetValue(0) as byte[]);
-            hash = ByteArrayToString(dataReader.GetValue(1) as byte[]);
+            //salt = ByteArrayToString(dataReader.GetValue(0) as byte[]);
+            //hash = ByteArrayToString(dataReader.GetValue(1) as byte[]);
+            byte[] salttemp = dataReader.GetValue(0) as byte[];
+            byte[] hashtemp = dataReader.GetValue(1) as byte[];
+
+            salt = System.Text.Encoding.ASCII.GetString(salttemp);
+            hash = System.Text.Encoding.ASCII.GetString(hashtemp);
+            
+            Debug.Log("TestHold");
         }
+        dataReader.Close();
 
         byte[] encodedPasscode = System.Text.Encoding.ASCII.GetBytes(passcode + salt + username);
         byte[] computedHash = sHA256.ComputeHash(encodedPasscode);
 
         if(hash == ByteArrayToString(computedHash))
         {
+            Debug.Log("Salt from db is:" + salt);
             Debug.Log("Hash From db is: " + hash);
             Debug.Log("Generated Hash is: " + ByteArrayToString(computedHash));
             return true;
@@ -144,6 +155,8 @@ public class TestScript : MonoBehaviour
 
     }
 
+    //byte[].ToString seems to return " 'System.Byte[]' " as opposed to a string of the contents of the array.
+    //This utility function instead builds the string for us.
     string ByteArrayToString(byte[] hash)
     {
         string hashString = "";
