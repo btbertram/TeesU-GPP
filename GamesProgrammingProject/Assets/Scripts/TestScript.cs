@@ -7,8 +7,6 @@ using System.Security.Cryptography;
 
 public class TestScript : MonoBehaviour
 {
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -23,47 +21,13 @@ public class TestScript : MonoBehaviour
         IDbCommand dbCommand;
         dbCommand = dbConnection.CreateCommand();
 
-
-        string selectQuery = "SELECT * FROM TestItem";
-
-        dbCommand.CommandText = selectQuery;
-        IDataReader dataReader = dbCommand.ExecuteReader();
-
-        while (dataReader.Read())
-        {
-            string itemName = dataReader.GetString(1);
-            int wealthValue = dataReader.GetInt32(2);
-
-            int id = dataReader.GetInt32(0);
-
-
-            Debug.Log("Name: " + itemName + ". Value: " + wealthValue + ". ID: " + id +".");
-        }
-
-        string testusername = "testUser";
+        string testusername = "testUser1";
         string testpasscode = "12345";
 
-        CreateAccount(testusername, testpasscode, dbConnection);
+        Debug.Log(VerifyAccount(testusername, testpasscode, dbConnection));
 
-        dbCommand.CommandText = "SELECT * FROM UserAccounts";
-
-        dbCommand.ExecuteReader();
-
-        while (dataReader.Read())
-        {
-            string userName = dataReader.GetString(1);
-            var salt = dataReader.GetValue(2);
-            var hash = dataReader.GetValue(3);
-
-            int id = dataReader.GetInt32(0);
-
-
-            Debug.Log("User: " + userName + ". Salt: " + salt + ". ID: " + id + ". Hash: " + hash + ".");
-        }
-
-
-        dataReader.Close();
-        dataReader = null;
+        //dataReader.Close();
+        //dataReader = null;
         dbCommand.Dispose();
         dbCommand = null;
         dbConnection.Close();
@@ -77,6 +41,43 @@ public class TestScript : MonoBehaviour
         
     }
 
+    void DebugCode(IDbConnection dbConnection)
+    {
+        string selectQuery = "SELECT * FROM TestItem";
+        IDbCommand dbCommand = dbConnection.CreateCommand();
+        dbCommand.CommandText = selectQuery;
+        IDataReader dataReader = dbCommand.ExecuteReader();
+
+        while (dataReader.Read())
+        {
+            string itemName = dataReader.GetString(1);
+            int wealthValue = dataReader.GetInt32(2);
+
+            int id = dataReader.GetInt32(0);
+
+
+            Debug.Log("Name: " + itemName + ". Value: " + wealthValue + ". ID: " + id + ".");
+        }
+        dataReader.Close();
+
+        dbCommand.CommandText = "SELECT * FROM UserAccounts";
+
+        //IDataReader dataReader = dbCommand.ExecuteReader();
+
+        //Note that this line will currently fail without an active data reader
+        while (dataReader.Read())
+        {
+            string userName = dataReader.GetString(1);
+            var salt = ByteArrayToString(dataReader.GetValue(2) as byte[]);
+            var hash = ByteArrayToString(dataReader.GetValue(3) as byte[]);
+
+            int id = dataReader.GetInt32(0);
+
+
+            Debug.Log("User: " + userName + ". Salt: " + salt + ". ID: " + id + ". Hash: " + hash + ".");
+        }
+    }
+
     private void CreateAccount(string newUsername, string newPasscode, IDbConnection dbConnection)
     {
         //Generate Salt
@@ -84,15 +85,15 @@ public class TestScript : MonoBehaviour
 
         //Combine salt with newPasscode
 
-        byte[] encodedPasscode = System.Text.ASCIIEncoding.ASCII.GetBytes(newPasscode + guid.ToString() + newUsername);
+        byte[] encodedPasscode = System.Text.Encoding.ASCII.GetBytes(newPasscode + guid.ToString() + newUsername);
 
         //Hash Salted Passcode
         ///Create Hashgen
 
         SHA256 sHA256 = SHA256.Create();
 
-        string finalHash = sHA256.ComputeHash(encodedPasscode).ToString();
-
+        byte[] computedHash = sHA256.ComputeHash(encodedPasscode);
+        string finalHash = ByteArrayToString(computedHash);
       
         //Insert query to database - new entry in user account table
         ///Sends User and Hash
@@ -103,9 +104,56 @@ public class TestScript : MonoBehaviour
         dbCommand.CommandText = insertQuery;
 
         dbCommand.ExecuteNonQuery();
-        Debug.Log("Attempted Account created");
+        Debug.Log("Attempted Account creation");
 
         //DB side - Trigger after insert: Create new User data table
+    }
+
+    private bool VerifyAccount(string username, string passcode, IDbConnection dbConnection)
+    {
+        SHA256 sHA256 = SHA256.Create();
+        string selectQuery = "SELECT salt, hash FROM UserAccounts;";
+        IDbCommand dbCommand = dbConnection.CreateCommand();
+        dbCommand.CommandText = selectQuery;
+        IDataReader dataReader = dbCommand.ExecuteReader();
+        string salt = "";
+        string hash = "";
+
+        while (dataReader.Read())
+        {
+            salt = ByteArrayToString(dataReader.GetValue(0) as byte[]);
+            hash = ByteArrayToString(dataReader.GetValue(1) as byte[]);
+        }
+
+        byte[] encodedPasscode = System.Text.Encoding.ASCII.GetBytes(passcode + salt + username);
+        byte[] computedHash = sHA256.ComputeHash(encodedPasscode);
+
+        if(hash == ByteArrayToString(computedHash))
+        {
+            Debug.Log("Hash From db is: " + hash);
+            Debug.Log("Generated Hash is: " + ByteArrayToString(computedHash));
+            return true;
+        }
+        else
+        {
+            Debug.Log("Salt from db is: " + salt);
+            Debug.Log("Hash From db is: " + hash);
+            Debug.Log("Generated Hash is: " + ByteArrayToString(computedHash));
+            return false;
+        }
+
+    }
+
+    string ByteArrayToString(byte[] hash)
+    {
+        string hashString = "";
+
+        foreach (byte x in hash)
+        {
+            hashString += x.ToString();
+        }
+
+        return hashString;
     }
 
     private void AuthAccount(string username, string passcode)
