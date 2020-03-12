@@ -21,7 +21,7 @@ public class TestScript : MonoBehaviour
         IDbCommand dbCommand;
         dbCommand = dbConnection.CreateCommand();
 
-        string testusername = "testUser1";
+        string testusername = "testUser7";
         string testpasscode = "12345";
 
         CreateAccount(testusername, testpasscode, dbConnection);
@@ -101,21 +101,35 @@ public class TestScript : MonoBehaviour
         ///Sends User and Hash
         ///Need Database connection to do this - Should have a class that saves connection. Scriptable object?
 
-        string insertQuery = "INSERT into UserAccounts(username, hash, salt) VALUES( '" + newUsername + "', '" + finalHash + "', '" + guid + "');";
+        string insertQuery = "INSERT into UserAccounts(username, hash, salt) VALUES(@newUsername, @finalHash, @guid);";
         IDbCommand dbCommand = dbConnection.CreateCommand();
-        dbCommand.CommandText = insertQuery;
 
+        CreateNamedParamater("@newUsername", newUsername, dbCommand);
+        CreateNamedParamater("@finalHash", finalHash, dbCommand);
+        CreateNamedParamater("@guid", guid.ToString(), dbCommand);
+        dbCommand.CommandText = insertQuery;
+        
         dbCommand.ExecuteNonQuery();
         Debug.Log("Attempted Account creation");
 
         //DB side - Trigger after insert: Create new User data table
     }
 
+    //Utility Function: Quickly builds a new generic paramater and adds it to a specified IdbCommand class.
+    private void CreateNamedParamater(string parameterName, object parameterValue, IDbCommand dbCommand)
+    {
+        IDataParameter parameter = dbCommand.CreateParameter();
+        parameter.ParameterName = parameterName;
+        parameter.Value = parameterValue;
+        dbCommand.Parameters.Add(parameter);
+    }
+
     private bool VerifyAccount(string username, string passcode, IDbConnection dbConnection)
     {
         SHA256 sHA256 = SHA256.Create();
-        string selectQuery = "SELECT salt, hash FROM UserAccounts;";
+        string selectQuery = "SELECT salt, hash FROM UserAccounts WHERE username = @username;";
         IDbCommand dbCommand = dbConnection.CreateCommand();
+        CreateNamedParamater("@username", username, dbCommand);
         dbCommand.CommandText = selectQuery;
         IDataReader dataReader = dbCommand.ExecuteReader();
         string salt = "";
@@ -168,20 +182,5 @@ public class TestScript : MonoBehaviour
 
         return hashString;
     }
-
-    private void AuthAccount(string username, string passcode)
-    {
-        //Select Query to database - retrive salt + hash based on Username
-
-        //Combine salt + passcode
-
-        //Hash salted passcode
-
-        //compare generated hash vs DB stored hash
-
-        //Match: Success, login
-        //Fail: Display error message
-    }
-
 
 }
