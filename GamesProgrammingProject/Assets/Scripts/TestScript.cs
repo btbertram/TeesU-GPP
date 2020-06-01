@@ -11,6 +11,13 @@ public class TestScript : MonoBehaviour
     void Start()
     {
 
+        /*
+         * This code is used as a testing mechanism for now. Attached to an object in unity,
+         * It automatically creates a new account, putting it in the database, then reading it back out
+         * by trying to log into it.
+        */
+
+
         //SQLite doesn't work directly with LINQ. As a result, we'll need to work with more generic implementaitons.
 
         string connectionString = "URI=file:" + Application.dataPath + "/prototypeDB.db";
@@ -21,8 +28,8 @@ public class TestScript : MonoBehaviour
         IDbCommand dbCommand;
         dbCommand = dbConnection.CreateCommand();
 
-        string testusername = "testUser7";
-        string testpasscode = "12345";
+        string testusername = "testUser125";
+        string testpasscode = "127345";
 
         CreateAccount(testusername, testpasscode, dbConnection);
         Debug.Log(VerifyAccount(testusername, testpasscode, dbConnection));
@@ -42,6 +49,10 @@ public class TestScript : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Prints text debug logs in Unity to test fetching and displaying information from the SQLite database.
+    /// </summary>
+    /// <param name="dbConnection">The Database connection object for the database in use.</param> 
     void DebugCode(IDbConnection dbConnection)
     {
         string selectQuery = "SELECT * FROM TestItem";
@@ -79,6 +90,13 @@ public class TestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Inserts a new User Account into the SQLite database.
+    /// Uses SQL parameters, guid salts, and hash for basic security.
+    /// </summary>
+    /// <param name="newUsername">The user supplied name for the new account.</param>
+    /// <param name="newPasscode">The user supplied passcode for the new account.</param>
+    /// <param name="dbConnection">The database connection object for the database in use.</param>
     private void CreateAccount(string newUsername, string newPasscode, IDbConnection dbConnection)
     {
         //Generate Salt
@@ -115,7 +133,12 @@ public class TestScript : MonoBehaviour
         //DB side - Trigger after insert: Create new User data table
     }
 
-    //Utility Function: Quickly builds a new generic paramater and adds it to a specified IdbCommand class.
+    /// <summary>
+    /// Utility: Quickly builds a new generic paramater and adds it to a specified IdbCommand class.
+    /// </summary>
+    /// <param name="parameterName">The desired SQL parameter name.</param> 
+    /// <param name="parameterValue">The value to assign to the parameter.</param>
+    /// <param name="dbCommand">The IDbCommand object this parameter is associated with.</param> 
     private void CreateNamedParamater(string parameterName, object parameterValue, IDbCommand dbCommand)
     {
         IDataParameter parameter = dbCommand.CreateParameter();
@@ -124,6 +147,15 @@ public class TestScript : MonoBehaviour
         dbCommand.Parameters.Add(parameter);
     }
 
+    //TODO: "AuthToken"
+    /// <summary>
+    /// Attempts to verify a user account by testing provided information against information in the database,
+    /// using hash comparisons. Currently reads out debug logs in unity for results.
+    /// </summary>
+    /// <param name="username">A user provided account name.</param>
+    /// <param name="passcode">A user provided passcode for the account.</param>
+    /// <param name="dbConnection">The database connection object for the database in use.</param>
+    /// <returns>True if the information provided matches the database information, false if it does not.</returns>
     private bool VerifyAccount(string username, string passcode, IDbConnection dbConnection)
     {
         SHA256 sHA256 = SHA256.Create();
@@ -169,8 +201,13 @@ public class TestScript : MonoBehaviour
 
     }
 
-    //byte[].ToString seems to return " 'System.Byte[]' " as opposed to a string of the contents of the array.
-    //This utility function instead builds the string for us.
+    
+    /// <summary>
+    /// Utility: Bulids a string from the contents of a byte[].
+    /// Reasoning: byte[].ToString returns " 'System.Byte[]' " as opposed to a string of the contents of the array.
+    /// </summary>
+    /// <param name="hash">A byte array representing a hash value.</param>
+    /// <returns></returns>
     string ByteArrayToString(byte[] hash)
     {
         string hashString = "";
