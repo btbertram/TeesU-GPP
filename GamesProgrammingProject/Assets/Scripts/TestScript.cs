@@ -20,7 +20,7 @@ public class TestScript : MonoBehaviour
 
         //SQLite doesn't work directly with LINQ. As a result, we'll need to work with more generic implementaitons.
 
-        string connectionString = "URI=file:" + Application.dataPath + "/prototypeDB.db";
+        string connectionString = "URI=file:" + Application.dataPath + "/GameDB.db";
         IDbConnection dbConnection;
         dbConnection = new SqliteConnection(connectionString);
 
@@ -29,10 +29,14 @@ public class TestScript : MonoBehaviour
         dbCommand = dbConnection.CreateCommand();
 
         string testusername = "testUser125";
-        string testpasscode = "127345";
+        string testpasscode = "1273457";
 
-        CreateAccount(testusername, testpasscode, dbConnection);
-        Debug.Log(VerifyAccount(testusername, testpasscode, dbConnection));
+        //CreateAccount(testusername, testpasscode, dbConnection);
+
+        GrantAuth(VerifyAccount(testusername, testpasscode, dbConnection), testusername, dbConnection);
+
+        Debug.Log(UserSessionSingleton.GetUsername());
+        Debug.Log(UserSessionSingleton.GetID());
 
         //dataReader.Close();
         //dataReader = null;
@@ -80,8 +84,8 @@ public class TestScript : MonoBehaviour
         while (dataReader.Read())
         {
             string userName = dataReader.GetString(1);
-            var salt = ByteArrayToString(dataReader.GetValue(2) as byte[]);
-            var hash = ByteArrayToString(dataReader.GetValue(3) as byte[]);
+            var salt = ByteArrayContentsToString(dataReader.GetValue(2) as byte[]);
+            var hash = ByteArrayContentsToString(dataReader.GetValue(3) as byte[]);
 
             int id = dataReader.GetInt32(0);
 
@@ -113,7 +117,7 @@ public class TestScript : MonoBehaviour
 
         byte[] computedHash = sHA256.ComputeHash(encodedPasscode);
 
-        string finalHash = ByteArrayToString(computedHash);
+        string finalHash = ByteArrayContentsToString(computedHash);
       
         //Insert query to database - new entry in user account table
         ///Sends User and Hash
@@ -147,7 +151,6 @@ public class TestScript : MonoBehaviour
         dbCommand.Parameters.Add(parameter);
     }
 
-    //TODO: "AuthToken"
     /// <summary>
     /// Attempts to verify a user account by testing provided information against information in the database,
     /// using hash comparisons. Currently reads out debug logs in unity for results.
@@ -159,10 +162,10 @@ public class TestScript : MonoBehaviour
     private bool VerifyAccount(string username, string passcode, IDbConnection dbConnection)
     {
         SHA256 sHA256 = SHA256.Create();
-        string selectQuery = "SELECT salt, hash FROM UserAccounts WHERE username = @username;";
+        string selectQuerySaltHash = "SELECT salt, hash FROM UserAccounts WHERE username = @username;";
         IDbCommand dbCommand = dbConnection.CreateCommand();
         CreateNamedParamater("@username", username, dbCommand);
-        dbCommand.CommandText = selectQuery;
+        dbCommand.CommandText = selectQuerySaltHash;
         IDataReader dataReader = dbCommand.ExecuteReader();
         string salt = "";
         string hash = "";
@@ -174,33 +177,56 @@ public class TestScript : MonoBehaviour
             byte[] salttemp = dataReader.GetValue(0) as byte[];
             byte[] hashtemp = dataReader.GetValue(1) as byte[];
 
+
             salt = System.Text.Encoding.ASCII.GetString(salttemp);
             hash = System.Text.Encoding.ASCII.GetString(hashtemp);
             
-            Debug.Log("TestHold");
+            //Debug.Log("TestHold");
         }
         dataReader.Close();
 
         byte[] encodedPasscode = System.Text.Encoding.ASCII.GetBytes(passcode + salt + username);
         byte[] computedHash = sHA256.ComputeHash(encodedPasscode);
 
-        if(hash == ByteArrayToString(computedHash))
+        if(hash == ByteArrayContentsToString(computedHash))
         {
             Debug.Log("Salt from db is:" + salt);
             Debug.Log("Hash From db is: " + hash);
-            Debug.Log("Generated Hash is: " + ByteArrayToString(computedHash));
+            Debug.Log("Generated Hash is: " + ByteArrayContentsToString(computedHash));
             return true;
         }
         else
         {
             Debug.Log("Salt from db is: " + salt);
             Debug.Log("Hash From db is: " + hash);
-            Debug.Log("Generated Hash is: " + ByteArrayToString(computedHash));
+            Debug.Log("Generated Hash is: " + ByteArrayContentsToString(computedHash));
             return false;
         }
-
     }
 
+    private void GrantAuth(bool verified, string username, IDbConnection dbConnection)
+    {
+        if (verified)
+        {
+            string selectQueryID = "SELECT ID FROM UserAccounts WHERE username = @username;";
+            IDbCommand dbCommand = dbConnection.CreateCommand();
+            CreateNamedParamater("@username", username, dbCommand);
+            dbCommand.CommandText = selectQueryID;
+            IDataReader dataReader = dbCommand.ExecuteReader();
+            //Temp assigned -1 to prevent data collision
+            int tempID = -1;
+
+            while (dataReader.Read())
+            {
+                tempID = dataReader.GetInt32(0);
+            }
+            dataReader.Close();
+
+            //Create "AuthToken"
+            UserSessionSingleton.CreateUserSessionInstance(tempID, username);
+
+        }
+    }
     
     /// <summary>
     /// Utility: Bulids a string from the contents of a byte[].
@@ -208,7 +234,7 @@ public class TestScript : MonoBehaviour
     /// </summary>
     /// <param name="hash">A byte array representing a hash value.</param>
     /// <returns></returns>
-    string ByteArrayToString(byte[] hash)
+    string ByteArrayContentsToString(byte[] hash)
     {
         string hashString = "";
 

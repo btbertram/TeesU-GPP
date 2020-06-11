@@ -6,30 +6,34 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using UnityEngine;
 
+//Singleton, Thread-Safe, Lazy
 public sealed class GameManager
 {
-    private static GameManager instance = new GameManager();
-    public UserSession currentUser;
 
+    private static GameManager _gameManagerInstance;
 
-    static GameManager()
-    {
-    }
+    private static readonly object _lock = new object();
 
     private GameManager()
     {
+        
     }
 
-    public static GameManager GmInstance
+    public static GameManager getGMInstance()
     {
-        get { return instance; }
+
+        if (_gameManagerInstance == null)
+        {
+            lock (_lock)
+            {
+                if (_gameManagerInstance == null)
+                {
+                    _gameManagerInstance = new GameManager();
+                }
+            }
+        }
+        return _gameManagerInstance;
     }
     
-    public void SetUser(UserSession authenticatedUser)
-    {
-        currentUser = authenticatedUser;
-    }
-
-
 }
 
