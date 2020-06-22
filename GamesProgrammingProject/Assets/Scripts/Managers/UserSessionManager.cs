@@ -5,7 +5,7 @@ using System.ComponentModel;
 using UnityEngine;
 
 //Singleton Design, thread safe lock, lazy-ish
-public sealed class UserSessionSingleton
+public sealed class UserSessionManager
 {
 
     private static UserSession _userSessionInstance;
@@ -26,7 +26,7 @@ public sealed class UserSessionSingleton
         }
     }
 
-    private UserSessionSingleton() 
+    private UserSessionManager() 
     { 
     
     }
