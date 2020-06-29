@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +13,7 @@ public class ConnectionHandler : MonoBehaviour
 
     private string _username;
     private string _passcode;
+    private MenuHandler _mHandler;
 
     //To be later used for telling user if their name contains invalid characters, etc.
     public void UpdateUsernameField()
@@ -23,7 +26,7 @@ public class ConnectionHandler : MonoBehaviour
 
     }
 
-    public void ClickVerify()
+    public async void ClickVerify()
     {
         InputField nameInputField = GameObject.Find("Username InputField").GetComponent<InputField>();
         InputField codeInputField = GameObject.Find("Password InputField").GetComponent<InputField>();
@@ -35,16 +38,23 @@ public class ConnectionHandler : MonoBehaviour
         Debug.Log(_passcode);
 
         ConnectionManager.OpenInstanceConnection();
-
-        ConnectionManager.GrantAuth(ConnectionManager.VerifyAccount(_username, _passcode), _username);
+        var result = await ConnectionManager.VerifyAccountAsync(_username, _passcode);
+        
+        ConnectionManager.GrantAuth(result._successful, _username);
 
         Debug.Log(UserSessionManager.GetUsername());
         Debug.Log(UserSessionManager.GetID());
 
         ConnectionManager.CloseInstanceConnection();
+
+        MenuHandler mHandler = GameObject.FindObjectOfType<MenuHandler>();
+        _mHandler.UpdateConfirmationMessageText(result._stringMessage + " Login", result._successful);
+        _mHandler.ToggleCanvas(_mHandler.loadingCanvas);
+        _mHandler.ToggleCanvas(_mHandler.messageCanvas);
+
     }
 
-    public void ClickRegister()
+    public async void ClickRegister()
     {
         InputField nameInputField = GameObject.Find("New Username InputField").GetComponent<InputField>();
         InputField codeInputField = GameObject.Find("New Password InputField").GetComponent<InputField>();
@@ -57,16 +67,20 @@ public class ConnectionHandler : MonoBehaviour
 
         ConnectionManager.OpenInstanceConnection();
 
-        ConnectionManager.CreateAccount(_username, _passcode);
+        var result = await ConnectionManager.CreateAccountAsync(_username, _passcode);
 
         ConnectionManager.CloseInstanceConnection();
+
+        _mHandler.UpdateConfirmationMessageText(result._stringMessage + " Registration", result._successful);
+        _mHandler.ToggleCanvas(_mHandler.loadingCanvas);
+        _mHandler.ToggleCanvas(_mHandler.messageCanvas);
 
     }
 
     // Start is called before the first frame update
     void Start()
     {
-
+        _mHandler = GameObject.FindObjectOfType<MenuHandler>();
     }
 
     // Update is called once per frame

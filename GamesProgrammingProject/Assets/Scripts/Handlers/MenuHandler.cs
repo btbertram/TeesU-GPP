@@ -10,33 +10,30 @@ using UnityEngine.UI;
 /// </summary>
 public class MenuHandler : MonoBehaviour
 {
-    GameObject loginCanvas;
-    GameObject registrationCanvas;
-    GameObject messageCanvas;
+
+    GameObject prevCanvas;
+    public GameObject messageCanvas;
+    public GameObject loadingCanvas;
     Text messageCanvasText;
-    private bool showLoginCanvas;
-    private bool showRegistrationCanvas;
-    private bool showMessageCanvas;
-    bool success;
 
-    public void LoginCanvasToggle()
+    public void ToggleCanvas(GameObject gameObject)
     {
-        showLoginCanvas = !showLoginCanvas;
-        loginCanvas.SetActive(showLoginCanvas);
-    }
-    public void RegistrationCanvasToggle()
-    {
-        showRegistrationCanvas = !showRegistrationCanvas;
-        registrationCanvas.SetActive(showRegistrationCanvas);
+        gameObject.SetActive(!gameObject.activeInHierarchy);
     }
 
-    public void MessageCanvasToggle()
+    public void ToggleCanvasSetPrev(GameObject gameObject)
     {
-        showMessageCanvas = !showMessageCanvas;
-        messageCanvas.SetActive(showMessageCanvas);
+        gameObject.SetActive(!gameObject.activeInHierarchy);
+        prevCanvas = gameObject;
     }
 
-    public void UpdateTextMessage(string labelText)
+    public void RestorePrevCanvas()
+    {
+        prevCanvas.SetActive(true);
+        prevCanvas = null;
+    }
+
+    public void UpdateConfirmationMessageText(string labelText, bool success)
     {
         if (success)
         {
@@ -53,30 +50,42 @@ public class MenuHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        showLoginCanvas = true;
-        showRegistrationCanvas = false;
+        //init state for UI
 
-        loginCanvas = GameObject.Find("Login Canvas");
-        registrationCanvas = GameObject.Find("Registration Canvas");
-        messageCanvas = GameObject.Find("Confirmation Message Canvas");
-
-        //The "right way to do it" accoring to unity documentation
-        Text[] textholder = messageCanvas.GetComponents<Text>();
-        foreach(Text x in textholder)
+        //This implementation should be faster than Find by name
+        Canvas[] canvases = GameObject.FindObjectsOfType<Canvas>();
+        
+        //Note: Add enum system or look into tags to make this less error prone
+        foreach(Canvas canvas in canvases)
         {
-            if (x.raycastTarget == false)
+            switch (canvas.name)
             {
-                messageCanvasText = x;
+                case "Login Canvas":
+                    canvas.gameObject.SetActive(true);
+                    break;
+                case "Registration Canvas":
+                    canvas.gameObject.SetActive(false);
+                    break;
+                case "Confirmation Message Canvas":
+                    messageCanvas = canvas.gameObject;                                     
+                    Text[] textholder = canvas.gameObject.GetComponentsInChildren<Text>();
+                    foreach (Text x in textholder)
+                    {
+                        if (x.text == "Confirm Message Placeholder")
+                        {
+                            messageCanvasText = x;
+                        }
+                    }
+                    canvas.gameObject.SetActive(false);
+                    break;
+                case "Loading Canvas":
+                    loadingCanvas = canvas.gameObject;
+                    canvas.gameObject.SetActive(false);
+                    break;
+                default:
+                    break;
             }
         }
-
-        //The easy way to do it
-        //messageCanvasText = messageCanvas.GetComponent("Message") as Text;
-
-
-        loginCanvas.SetActive(showLoginCanvas);
-        registrationCanvas.SetActive(showRegistrationCanvas);
-
     }
 
     // Update is called once per frame
