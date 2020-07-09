@@ -163,9 +163,9 @@ public sealed class ConnectionManager
     public static async Task<BoolStringResult> VerifyAccountAsync(string username, string passcode)
     {
         //Debug: Wait for five seconds
-        await Task.Delay(2000);
+        await Task.Delay(5000);
         var result = await Task.FromResult<BoolStringResult>(VerifyAccount(username, passcode));
-
+        
         return result;
     }
 
