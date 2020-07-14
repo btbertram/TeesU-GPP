@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 
-//Singleton Design, thread safe lock, lazy-ish
+//Singleton Design, thread safe lock, non-lazy
 public sealed class UserSessionManager
 {
 

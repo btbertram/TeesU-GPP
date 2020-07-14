@@ -14,6 +14,7 @@ public class ConnectionHandler : MonoBehaviour
     private string _username;
     private string _passcode;
     private MenuHandler _mHandler;
+    private AccountConnection _aConnection;
 
     //To be later used for telling user if their name contains invalid characters, etc.
     public void UpdateUsernameField()
@@ -38,9 +39,9 @@ public class ConnectionHandler : MonoBehaviour
         Debug.Log(_passcode);
 
         ConnectionManager.OpenInstanceConnection();
-        var result = await ConnectionManager.VerifyAccountAsync(_username, _passcode);
+        var result = await _aConnection.VerifyAccountAsync(_username, _passcode);
         
-        ConnectionManager.GrantAuth(result._successful, _username);
+        _aConnection.GrantAuth(result._successful, _username);
 
         Debug.Log(UserSessionManager.GetUsername());
         Debug.Log(UserSessionManager.GetID());
@@ -67,7 +68,7 @@ public class ConnectionHandler : MonoBehaviour
 
         ConnectionManager.OpenInstanceConnection();
 
-        var result = await ConnectionManager.CreateAccountAsync(_username, _passcode);
+        var result = await _aConnection.CreateAccountAsync(_username, _passcode);
 
         ConnectionManager.CloseInstanceConnection();
 
@@ -81,6 +82,7 @@ public class ConnectionHandler : MonoBehaviour
     void Start()
     {
         _mHandler = GameObject.FindObjectOfType<MenuHandler>();
+        _aConnection = GameObject.FindObjectOfType<AccountConnection>();
     }
 
     // Update is called once per frame

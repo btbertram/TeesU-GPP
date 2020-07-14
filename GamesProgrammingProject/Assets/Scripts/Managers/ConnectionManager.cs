@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Data;
 using Mono.Data.Sqlite;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Dynamic;
 using System.Threading.Tasks;
@@ -13,16 +12,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 
 public sealed class ConnectionManager
 {
-    //Check OpenInstanceConnection for string definition.
-    private string _internalConnectionString;
-    private IDbConnection _dbConnection;
-
-    //Simple return type structure, used for providing information to UI windows.
-    public struct BoolStringResult
-    {
-        public bool _successful;
-        public string _stringMessage;
-    }
+    private readonly string _internalConnectionString = "URI=file:" + Application.dataPath + "/GameDB.db";
+    public readonly IDbConnection _dbConnection;
 
     #region Singleton Implementation
     private static ConnectionManager _connectionManagerInstance;
@@ -31,7 +22,7 @@ public sealed class ConnectionManager
 
     private ConnectionManager()
     {
-
+        _dbConnection = new SqliteConnection(_internalConnectionString);
     }
 
     public static ConnectionManager GetCMInstance()
@@ -51,7 +42,7 @@ public sealed class ConnectionManager
     #endregion
 
 
-    #region Utility Functions
+    #region Utility
 
     /// <summary>
     /// Prints text debug logs in Unity to test fetching and displaying information from the SQLite database.
@@ -102,17 +93,25 @@ public sealed class ConnectionManager
     /// </remarks>
     public static void OpenInstanceConnection()
     {
-        _connectionManagerInstance._internalConnectionString = "URI=file:" + Application.dataPath + "/GameDB.db";
-
-        _connectionManagerInstance._dbConnection = new SqliteConnection(_connectionManagerInstance._internalConnectionString);
-
         _connectionManagerInstance._dbConnection.Open();
     }
 
     public static void CloseInstanceConnection()
     {
         _connectionManagerInstance._dbConnection.Close();
-        _connectionManagerInstance._dbConnection = null;
+    }
+
+    public static IDbConnection GetConnection()
+    {
+        try
+        {
+            return _connectionManagerInstance._dbConnection;
+        }
+        catch (NullReferenceException)
+        {
+            Debug.LogError("Error: Instance has no constucted connection.");
+            return null;
+        }
     }
 
     /// <summary>
@@ -121,12 +120,39 @@ public sealed class ConnectionManager
     /// <param name="parameterName">The desired SQL parameter name.</param> 
     /// <param name="parameterValue">The value to assign to the parameter.</param>
     /// <param name="dbCommand">The IDbCommand object this parameter is associated with.</param> 
-    private static void CreateNamedParamater(string parameterName, object parameterValue, IDbCommand dbCommand)
+    public static void CreateNamedParamater(string parameterName, object parameterValue, IDbCommand dbCommand)
     {
         IDataParameter parameter = dbCommand.CreateParameter();
         parameter.ParameterName = parameterName;
         parameter.Value = parameterValue;
         dbCommand.Parameters.Add(parameter);
+    }
+
+    public static async Task<long> AsyncQueryTimeNow()
+    {
+        return await Task.FromResult(QueryCurrentTime());
+    }
+
+    /// <summary>
+    /// Queries the database for the current time.
+    /// </summary>
+    /// <returns>The current time according to the database, or -1 if no data could be selected.</returns>
+    private static long QueryCurrentTime()
+    {
+        OpenInstanceConnection();
+        IDbCommand dbCommand = GetConnection().CreateCommand();
+        string selectQueryTimeNow = "SELECT strftime('%s','now')";
+        dbCommand.CommandText = selectQueryTimeNow;
+        IDataReader dataReader = dbCommand.ExecuteReader();
+
+        long time = -1;
+        while (dataReader.Read())
+        {
+            time = dataReader.GetInt64(0);
+        }
+
+        CloseInstanceConnection();
+        return time;
     }
 
     /// <summary>
@@ -135,7 +161,7 @@ public sealed class ConnectionManager
     /// </summary>
     /// <param name="hash">A byte array representing a hash value.</param>
     /// <returns></returns>
-    private static string ByteArrayContentsToString(byte[] hash)
+    public static string ByteArrayContentsToString(byte[] hash)
     {
         string hashString = "";
 
@@ -149,255 +175,9 @@ public sealed class ConnectionManager
 
     #endregion
 
-    #region Async Wrappers
-    public static async Task<BoolStringResult> CreateAccountAsync(string username, string passcode)
-    {
-        //Debug: Wait for two seconds
-        await Task.Delay(2000);
-
-        var result = await CreateAccount(username, passcode);
-
-        return result;
-    }
-
-    public static async Task<BoolStringResult> VerifyAccountAsync(string username, string passcode)
-    {
-        //Debug: Wait for five seconds
-        await Task.Delay(5000);
-        var result = await Task.FromResult<BoolStringResult>(VerifyAccount(username, passcode));
-        
-        return result;
-    }
 
 
-    #endregion
-
-    private static BoolStringResult InputQuickExit(string username, string passcode)
-    {
-        BoolStringResult result;
-
-        if (username == "")
-        {
-            result._successful = false;
-            result._stringMessage = "No Username Given. Please enter a username.";
-
-            return result;
-        }
-
-        if (passcode == "")
-        {
-            result._successful = false;
-            result._stringMessage = "No Password Given. Please enter a password.";
-
-            return result;
-        }
-
-        result._stringMessage = "";
-        result._successful = true;
-        return result;
-    }
-
-    /// <summary>
-    /// Inserts a new User Account into the SQLite database.
-    /// Uses SQL parameters, guid salts, and hash for basic security.
-    /// </summary>
-    /// <param name="newUsername">The user supplied name for the new account.</param>
-    /// <param name="newPasscode">The user supplied passcode for the new account.</param>
-    /// <param name="dbConnection">The database connection object for the database in use.</param>
-    public static async Task<BoolStringResult> CreateAccount(string newUsername, string newPasscode)
-    {
-        BoolStringResult result;
-
-        //Test username
-        result = InputQuickExit(newUsername, newPasscode);
-        if (!result._successful)
-        {
-            return result;
-        }
-
-        result = await Task.FromResult<BoolStringResult>(TestUsernameAvailability(newUsername));
-        if (!result._successful)
-        {
-            return result;            
-        }
-
-        //Generate Salt
-        System.Guid guid = System.Guid.NewGuid();
-
-        //Combine salt with newPasscode
-        //ASCII works with db, unicode does not? Experiment.
-        byte[] encodedPasscode = System.Text.Encoding.ASCII.GetBytes(newPasscode + guid + newUsername);
-
-        //Hash Salted Passcode
-        ///Create Hashgen
-
-        SHA256 sHA256 = SHA256.Create();
-
-        byte[] computedHash = sHA256.ComputeHash(encodedPasscode);
-
-        string finalHash = ByteArrayContentsToString(computedHash);
-      
-        //Insert query to database - new entry in user account table
-        ///Sends User and Hash
-        ///Need Database connection to do this - Should have a class that saves connection. Scriptable object?
-
-        string insertQuery = "INSERT into UserAccounts(username, hash, salt) VALUES(@newUsername, @finalHash, @guid);";
-        IDbCommand dbCommand = _connectionManagerInstance._dbConnection.CreateCommand();
-
-        CreateNamedParamater("@newUsername", newUsername, dbCommand);
-        CreateNamedParamater("@finalHash", finalHash, dbCommand);
-        CreateNamedParamater("@guid", guid.ToString(), dbCommand);
-        dbCommand.CommandText = insertQuery;
-        
-        ///ExecuteNonQuery returns # of rows affected by command when-
-        ///command is a UPDATE, INSERT, or DELETE.
-        ///-1 is returned when any other command is used.
-        int returnVal = dbCommand.ExecuteNonQuery();
-        Debug.Log("Attempted Account creation");
-        if(returnVal == 1)
-        {
-            //Check if newly created account works
-            result = await VerifyAccountAsync(newUsername, newPasscode);
-            if (result._successful)
-            {
-                result._stringMessage = "Account Created!";
-                return result;
-            }
-            else
-            {
-                result._stringMessage = "Unable to verify account creation.";
-                return result;
-            }
-                
-        }
-        else
-        {
-            result._successful = false;
-            result._stringMessage = "Error during account creation.";
-            return result;
-        }
-        //DB side - Trigger after insert: Create new User data table
-    }
-
-    private static BoolStringResult TestUsernameAvailability(string username)
-    {
-        BoolStringResult result;
-
-        IDbCommand dbCommand = _connectionManagerInstance._dbConnection.CreateCommand();
-        CreateNamedParamater("@username", username, dbCommand);
-
-        string query = "SELECT username FROM UserAccounts WHERE username = @username;";
-        dbCommand.CommandText = query;
-
-        IDataReader dataReader = dbCommand.ExecuteReader();
-
-        if (dataReader.Read())
-        {
-            //if there's anything to read, we have a matching username, so...
-            result._stringMessage = "Username in use.";
-            result._successful = false;
-            return result;
-        }
-        else
-        {
-            //Otherwise, there are no results, which mean no matches for that username.
-            //The provided username is available, so...
-            result._stringMessage = "";
-            result._successful = true;
-            return result;
-        }
-    }
-
-    /// <summary>
-    /// Attempts to verify a user account by testing provided information against information in the database,
-    /// using hash comparisons. Currently reads out debug logs in unity for results.
-    /// </summary>
-    /// <param name="username">A user provided account name.</param>
-    /// <param name="passcode">A user provided passcode for the account.</param>
-    /// <param name="dbConnection">The database connection object for the database in use.</param>
-    /// <returns>True if the information provided matches the database information, false if it does not.</returns>
-    public static BoolStringResult VerifyAccount(string username, string passcode)
-    {
-        BoolStringResult result;
-
-        result = InputQuickExit(username, passcode);
-        if (!result._successful)
-        {
-            return result;
-        }
-
-        
-        SHA256 sHA256 = SHA256.Create();
-        string selectQuerySaltHash = "SELECT salt, hash FROM UserAccounts WHERE username = @username;";
-        IDbCommand dbCommand = _connectionManagerInstance._dbConnection.CreateCommand();
-        CreateNamedParamater("@username", username, dbCommand);
-        dbCommand.CommandText = selectQuerySaltHash;
-        IDataReader dataReader = dbCommand.ExecuteReader();
-        string salt = "";
-        string hash = "";
-
-        while (dataReader.Read())
-        {
-            //salt = ByteArrayToString(dataReader.GetValue(0) as byte[]);
-            //hash = ByteArrayToString(dataReader.GetValue(1) as byte[]);
-            byte[] salttemp = dataReader.GetValue(0) as byte[];
-            byte[] hashtemp = dataReader.GetValue(1) as byte[];
-
-
-            salt = System.Text.Encoding.ASCII.GetString(salttemp);
-            hash = System.Text.Encoding.ASCII.GetString(hashtemp);
-
-            //Debug.Log("TestHold");
-        }
-        dataReader.Close();
-        
-        byte[] encodedPasscode = System.Text.Encoding.ASCII.GetBytes(passcode + salt + username);
-        byte[] computedHash = sHA256.ComputeHash(encodedPasscode);
-
-        if (hash == ByteArrayContentsToString(computedHash))
-        {
-            Debug.Log("Salt from db is:" + salt);
-            Debug.Log("Hash From db is: " + hash);
-            Debug.Log("Generated Hash is: " + ByteArrayContentsToString(computedHash));
-            result._successful = true;
-            result._stringMessage = "";
-            return result;
-        }
-        else
-        {
-            Debug.Log("Salt from db is: " + salt);
-            Debug.Log("Hash From db is: " + hash);
-            Debug.Log("Generated Hash is: " + ByteArrayContentsToString(computedHash));
-            result._successful = false;
-            result._stringMessage = "Invalid Username or Password.";
-            return result;
-        
-        }
-    }
-
-    public static void GrantAuth(bool verified, string username)
-    {
-        if (verified)
-        {
-            string selectQueryID = "SELECT ID FROM UserAccounts WHERE username = @username;";
-            IDbCommand dbCommand = _connectionManagerInstance._dbConnection.CreateCommand();
-            CreateNamedParamater("@username", username, dbCommand);
-            dbCommand.CommandText = selectQueryID;
-            IDataReader dataReader = dbCommand.ExecuteReader();
-            //Temp assigned -1 to prevent data collision
-            int tempID = -1;
-
-            while (dataReader.Read())
-            {
-                tempID = dataReader.GetInt32(0);
-            }
-            dataReader.Close();
-
-            //Create "AuthToken"
-            UserSessionManager.CreateUserSessionInstance(tempID, username);
-
-        }
-    }
+   
     
 
 
