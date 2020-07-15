@@ -5,6 +5,9 @@ using System.Drawing;
 using System.Threading.Tasks;
 using UnityEngine;
 
+/// <summary>
+/// A Class that implents database connections and queries for GatheringPoint objects.
+/// </summary>
 public class GatheringConnection : MonoBehaviour
 {
 
@@ -57,6 +60,13 @@ public class GatheringConnection : MonoBehaviour
 
         ConnectionManager.CloseInstanceConnection();
 
+        foreach(GameObject gatherPoint in gatheringPointObjects)
+        {
+            GatheringPoint gpScript = gatherPoint.GetComponentInChildren<GatheringPoint>();
+            gatherPoint.transform.position = gpScript.GetPos();
+        }
+
+
         //Use information from the database to create a number of new game objects.
         //Each object will be assigned a matching id, selected from the database
         //That ID will be used to query for information from the database when necessary
@@ -99,6 +109,7 @@ public class GatheringConnection : MonoBehaviour
         _userSessionUser = UserSessionManager.GetUsername();
         _userSessionID = UserSessionManager.GetID();
         ConnectionManager.GetCMInstance();
+        _ = AsyncLoadGatheringPoints();
     }
 
     // Update is called once per frame
