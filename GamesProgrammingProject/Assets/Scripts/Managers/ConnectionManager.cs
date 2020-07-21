@@ -50,7 +50,7 @@ public sealed class ConnectionManager
     /// <param name="dbConnection">The Database connection object for the database in use.</param> 
     void DebugCode()
     {
-        string selectQuery = "SELECT * FROM TestItem";
+        string selectQuery = "SELECT * FROM TestItem;";
         IDbCommand dbCommand = _dbConnection.CreateCommand();
         dbCommand.CommandText = selectQuery;
         IDataReader dataReader = dbCommand.ExecuteReader();
@@ -67,7 +67,7 @@ public sealed class ConnectionManager
         }
         dataReader.Close();
 
-        dbCommand.CommandText = "SELECT * FROM UserAccounts";
+        dbCommand.CommandText = "SELECT * FROM UserAccounts;";
 
         //IDataReader dataReader = dbCommand.ExecuteReader();
 
@@ -141,7 +141,7 @@ public sealed class ConnectionManager
     {
         OpenInstanceConnection();
         IDbCommand dbCommand = GetConnection().CreateCommand();
-        string selectQueryTimeNow = "SELECT strftime('%s','now')";
+        string selectQueryTimeNow = "SELECT strftime('%s','now');";
         dbCommand.CommandText = selectQueryTimeNow;
         IDataReader dataReader = dbCommand.ExecuteReader();
 

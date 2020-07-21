@@ -94,7 +94,33 @@ public class AccountConnection : MonoBehaviour
             result = await VerifyAccountAsync(newUsername, newPasscode);
             if (result._successful)
             {
+                //We add new UserStat row based on user/ID
+                dbCommand.Parameters.Clear();
+
+                string selectQuery = "SELECT ID FROM UserAccounts WHERE username = @username;";
+                ConnectionManager.CreateNamedParamater("@username", newUsername, dbCommand);
+                dbCommand.CommandText = selectQuery;
+                int id = -1;
+
+                IDataReader reader = dbCommand.ExecuteReader();
+                while (reader.Read())
+                {
+                    id = reader.GetInt32(0);
+                }
+                reader.Close();
+                reader.Dispose();
+
+                ConnectionManager.CreateNamedParamater("@ID", id, dbCommand);
+
+                insertQuery = "INSERT into UserStats(userID, username) VALUES(@ID, @username);";
+
+                dbCommand.CommandText = insertQuery;
+                dbCommand.ExecuteNonQuery();
+
                 result._stringMessage = "Account Created!";
+
+
+
                 return result;
             }
             else

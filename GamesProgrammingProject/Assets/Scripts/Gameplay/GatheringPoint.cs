@@ -10,22 +10,27 @@ using UnityEngine;
 public class GatheringPoint : MonoBehaviour
 {
     int _pointID;
-    EGatherPointType _type;
+    public EGatherPointType _type;
     long _respawnTimer;
-    Vector3 _pos;
+    //Vector3 _pos;
     bool _isActive;
     GatheringConnection gatheringPointConneciton;
 
-    public void LoadPoint(int ID, EGatherPointType type, Vector3 pos)
+    public void LoadPoint(int ID, EGatherPointType type)
     {
         _pointID = ID;
         _type = type;
-        _pos = pos;
+        //_pos = pos;
     }
 
-    public Vector3 GetPos()
+    //public Vector3 GetPos()
+    //{
+    //    return _pos;
+    //}
+
+    public EGatherPointType GetPointType()
     {
-        return _pos;
+        return _type;
     }
 
     public async void AsyncCheckIfRegrown()

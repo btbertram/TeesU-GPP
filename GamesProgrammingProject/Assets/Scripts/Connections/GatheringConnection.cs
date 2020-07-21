@@ -10,25 +10,23 @@ using UnityEngine;
 /// </summary>
 public class GatheringConnection : MonoBehaviour
 {
-
-    string _userSessionUser;
-    int _userSessionID;
-    IDbConnection connection;
+    public GameObject GoldGatherPointPrefab;
 
 
     public async Task AsyncLoadGatheringPoints()
     {
-        await new Task(() => LoadGatheringPoints());
+        await new Task(() => { LoadGatheringPoints(); });
     }
 
     private void LoadGatheringPoints()
     {
+
+        Debug.Log("Loading Points...");
         ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
-        string selectGatheringPoints = "SELECT * GatheringPoints";
+        string selectGatheringPoints = "SELECT * FROM GatheringPoints;";
         dbCommand.CommandText = selectGatheringPoints;
-        IDataReader dataReader = dbCommand.ExecuteReader();
 
         List<GameObject> gatheringPointObjects = new List<GameObject>();
         int pointID;
@@ -39,11 +37,14 @@ public class GatheringConnection : MonoBehaviour
         int loopcounter = -1;
         //Create a gameobject with the component, then set things on the component.
 
+        IDataReader dataReader = dbCommand.ExecuteReader();
         while (dataReader.Read())
         {
             loopcounter += 1;
-            var newgp = new GameObject("gatheringPoint" + loopcounter, typeof(GatheringPoint));
-            var gpscript = newgp.GetComponent<GatheringPoint>();
+
+            GameObject newgp;
+            GatheringPoint gpscript;
+            Quaternion zeroQuaternion = new Quaternion(0,0,0,0);
             pointID = dataReader.GetInt32(0);
             type = (EGatherPointType)dataReader.GetInt32(1);
             posX = dataReader.GetFloat(2);
@@ -52,27 +53,21 @@ public class GatheringConnection : MonoBehaviour
 
             var posLoad = new Vector3(posX, posY, posZ);
 
-            gpscript.LoadPoint(pointID, type, posLoad);
+            switch (type)
+            {
+                case EGatherPointType.GoldGatherType :
+                    newgp = GameObject.Instantiate(GoldGatherPointPrefab, posLoad, zeroQuaternion);
+                    newgp.name = "gatheringPoint" + loopcounter;
+                    gpscript = newgp.GetComponent<GatheringPoint>();
+                    gpscript.LoadPoint(pointID, type);
+                    break;
 
-            gatheringPointObjects.Add(newgp);
+                default:
+                    break;
+            }
+
         }
-
-
-        ConnectionManager.CloseInstanceConnection();
-
-        foreach(GameObject gatherPoint in gatheringPointObjects)
-        {
-            GatheringPoint gpScript = gatherPoint.GetComponentInChildren<GatheringPoint>();
-            gatherPoint.transform.position = gpScript.GetPos();
-        }
-
-
-        //Use information from the database to create a number of new game objects.
-        //Each object will be assigned a matching id, selected from the database
-        //That ID will be used to query for information from the database when necessary
-        //Each object will be positioned, and assigned a type based on information in the database. 
-
-
+        Debug.Log("Points Loaded");
     }
 
     public async Task<long> AsyncQueryGatherTime(int gatherPointID)
@@ -87,7 +82,7 @@ public class GatheringConnection : MonoBehaviour
         ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
-        string selectQueryTimeGathered = "SELECT timeHarvested FROM GatheringPoints WHERE pointID = @ID";
+        string selectQueryTimeGathered = "SELECT timeHarvested FROM GatheringPoints WHERE pointID = @ID;";
         ConnectionManager.CreateNamedParamater("@ID", gatherPointID, dbCommand);
         dbCommand.CommandText = selectQueryTimeGathered;
         IDataReader dataReader = dbCommand.ExecuteReader();
@@ -106,10 +101,8 @@ public class GatheringConnection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _userSessionUser = UserSessionManager.GetUsername();
-        _userSessionID = UserSessionManager.GetID();
         ConnectionManager.GetCMInstance();
-        _ = AsyncLoadGatheringPoints();
+        LoadGatheringPoints();
     }
 
     // Update is called once per frame
