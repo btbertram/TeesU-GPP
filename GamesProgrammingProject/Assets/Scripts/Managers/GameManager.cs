@@ -34,6 +34,16 @@ public sealed class GameManager
         }
         return _gameManagerInstance;
     }
+
+    public void UnityApplicationQuit()
+    {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
+    }
+
     
 }
 

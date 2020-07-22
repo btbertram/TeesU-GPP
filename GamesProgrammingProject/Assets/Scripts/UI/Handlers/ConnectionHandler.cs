@@ -50,8 +50,13 @@ public class ConnectionHandler : MonoBehaviour
 
         MenuHandler mHandler = GameObject.FindObjectOfType<MenuHandler>();
         _mHandler.UpdateConfirmationMessageText(result._stringMessage + " Login", result._successful);
-        _mHandler.ToggleCanvas(_mHandler.loadingCanvas);
-        _mHandler.ToggleCanvas(_mHandler.messageCanvas);
+        if (result._successful)
+        {
+            _mHandler.SetPrevCanvas(_mHandler.GetMainMenuCanvas());
+        }
+        _mHandler.ToggleCanvas(_mHandler.GetLoadingCanvas());
+        _mHandler.ToggleCanvas(_mHandler.GetMessageCanvas());
+
 
     }
 
@@ -73,8 +78,8 @@ public class ConnectionHandler : MonoBehaviour
         ConnectionManager.CloseInstanceConnection();
 
         _mHandler.UpdateConfirmationMessageText(result._stringMessage + " Registration", result._successful);
-        _mHandler.ToggleCanvas(_mHandler.loadingCanvas);
-        _mHandler.ToggleCanvas(_mHandler.messageCanvas);
+        _mHandler.ToggleCanvas(_mHandler.GetLoadingCanvas());
+        _mHandler.ToggleCanvas(_mHandler.GetMessageCanvas());
 
     }
 

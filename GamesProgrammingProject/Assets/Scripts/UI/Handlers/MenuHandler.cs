@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor.VersionControl;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -12,19 +14,40 @@ public class MenuHandler : MonoBehaviour
 {
 
     GameObject prevCanvas;
-    public GameObject messageCanvas;
-    public GameObject loadingCanvas;
+    //These three GameObjects are used by the Connection Handler
+    GameObject messageCanvas;
+    GameObject loadingCanvas;
+    GameObject mainMenuCanvas;
     Text messageCanvasText;
+
+    public GameObject GetMessageCanvas()
+    {
+        return messageCanvas;
+    }
+
+    public GameObject GetLoadingCanvas()
+    {
+        return loadingCanvas;
+    }
+
+    public GameObject GetMainMenuCanvas()
+    {
+        return mainMenuCanvas;
+    }
 
     public void ToggleCanvas(GameObject gameObject)
     {
         gameObject.SetActive(!gameObject.activeInHierarchy);
     }
 
-    public void ToggleCanvasSetPrev(GameObject gameObject)
+    public void SetPrevCanvas(GameObject gameObject)
     {
-        gameObject.SetActive(!gameObject.activeInHierarchy);
         prevCanvas = gameObject;
+    }
+
+    public void ClearPrevCanvas()
+    {
+        prevCanvas = null;
     }
 
     public void RestorePrevCanvas()
@@ -47,6 +70,19 @@ public class MenuHandler : MonoBehaviour
         messageCanvasText.text = labelText;
     }
 
+    public void ClickQuit()
+    {
+        GameManager.getGMInstance().UnityApplicationQuit();
+    }
+
+    public void ClickLoadSceneOvrWorld()
+    {
+        //Loads Overworld Scene
+        //LoadSceneAsync would be better, but it's not actually an async function (it's yield), and a loading screen is a "should have"
+        //so I'll skip that for now.
+        SceneManager.LoadScene(1);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,9 +98,6 @@ public class MenuHandler : MonoBehaviour
             {
                 case "Login Canvas":
                     canvas.gameObject.SetActive(true);
-                    break;
-                case "Registration Canvas":
-                    canvas.gameObject.SetActive(false);
                     break;
                 case "Confirmation Message Canvas":
                     messageCanvas = canvas.gameObject;                                     
@@ -82,15 +115,14 @@ public class MenuHandler : MonoBehaviour
                     loadingCanvas = canvas.gameObject;
                     canvas.gameObject.SetActive(false);
                     break;
+                case "Main Menu Canvas":
+                    mainMenuCanvas = canvas.gameObject;
+                    canvas.gameObject.SetActive(false);
+                    break;
                 default:
+                    canvas.gameObject.SetActive(false);
                     break;
             }
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
