@@ -7,14 +7,17 @@ using UnityEngine;
 public class PlayerData : MonoBehaviour
 {
 
-    Transform playerPos;
     int goldHeld;
-
 
     public void UpdatePlayerGold(int amount)
     {
         goldHeld += amount;
     }
+
+    public int GetGoldHeld()
+    {
+        return goldHeld;
+    } 
 
     public async Task AsyncUpdatePlayerDataTable()
     {
@@ -30,7 +33,7 @@ public class PlayerData : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerPos = GetComponentInParent<Transform>();
+
     } 
 
     // Update is called once per frame

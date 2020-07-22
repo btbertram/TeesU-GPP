@@ -23,7 +23,7 @@ public class AccountConnection : MonoBehaviour
     public async Task<BoolStringResult> VerifyAccountAsync(string username, string passcode)
     {
         //Debug: Wait for five seconds
-        await Task.Delay(5000);
+        await Task.Delay(1000);
         var result = await Task.FromResult<BoolStringResult>(VerifyAccount(username, passcode));
 
         return result;

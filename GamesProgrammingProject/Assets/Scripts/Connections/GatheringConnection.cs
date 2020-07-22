@@ -67,6 +67,7 @@ public class GatheringConnection : MonoBehaviour
             }
 
         }
+        ConnectionManager.CloseInstanceConnection();
         Debug.Log("Points Loaded");
     }
 

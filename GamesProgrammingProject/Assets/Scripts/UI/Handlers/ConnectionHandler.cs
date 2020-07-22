@@ -15,6 +15,7 @@ public class ConnectionHandler : MonoBehaviour
     private string _passcode;
     private MenuHandler _mHandler;
     private AccountConnection _aConnection;
+    private SerializationConnection _sConnection;
 
     //To be later used for telling user if their name contains invalid characters, etc.
     public void UpdateUsernameField()
@@ -29,6 +30,8 @@ public class ConnectionHandler : MonoBehaviour
 
     public async void ClickVerify()
     {
+        _mHandler = GameObject.FindObjectOfType<MenuHandler>();
+        _aConnection = GameObject.FindObjectOfType<AccountConnection>();
         InputField nameInputField = GameObject.Find("Username InputField").GetComponent<InputField>();
         InputField codeInputField = GameObject.Find("Password InputField").GetComponent<InputField>();
 
@@ -62,6 +65,8 @@ public class ConnectionHandler : MonoBehaviour
 
     public async void ClickRegister()
     {
+        _mHandler = GameObject.FindObjectOfType<MenuHandler>();
+        _aConnection = GameObject.FindObjectOfType<AccountConnection>();
         InputField nameInputField = GameObject.Find("New Username InputField").GetComponent<InputField>();
         InputField codeInputField = GameObject.Find("New Password InputField").GetComponent<InputField>();
 
@@ -83,11 +88,22 @@ public class ConnectionHandler : MonoBehaviour
 
     }
 
+    public async void ClickSave()
+    {
+        _sConnection = GameObject.FindObjectOfType<SerializationConnection>();
+
+        ConnectionManager.OpenInstanceConnection();
+
+        await _sConnection.SavePlayerStatus();
+
+        ConnectionManager.CloseInstanceConnection();
+
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        _mHandler = GameObject.FindObjectOfType<MenuHandler>();
-        _aConnection = GameObject.FindObjectOfType<AccountConnection>();
+        ConnectionManager.GetCMInstance();
     }
 
     // Update is called once per frame

@@ -19,7 +19,7 @@ public sealed class GameManager
         
     }
 
-    public static GameManager getGMInstance()
+    public static GameManager GetGMInstance()
     {
 
         if (_gameManagerInstance == null)

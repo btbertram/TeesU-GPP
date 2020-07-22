@@ -72,7 +72,12 @@ public class MenuHandler : MonoBehaviour
 
     public void ClickQuit()
     {
-        GameManager.getGMInstance().UnityApplicationQuit();
+        GameManager.GetGMInstance().UnityApplicationQuit();
+    }
+
+    public void ClickUnpause()
+    {
+        //GameManager.GetGMInstance().UnimplementedTimescaleStopFunction()
     }
 
     public void ClickLoadSceneOvrWorld()
