@@ -22,10 +22,11 @@ public class GatheringConnection : MonoBehaviour
     {
 
         Debug.Log("Loading Points...");
+        string selectGatheringPoints = "SELECT * FROM GatheringPoints;";
+
         ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
-        string selectGatheringPoints = "SELECT * FROM GatheringPoints;";
         dbCommand.CommandText = selectGatheringPoints;
 
         List<GameObject> gatheringPointObjects = new List<GameObject>();
@@ -37,19 +38,19 @@ public class GatheringConnection : MonoBehaviour
         int loopcounter = -1;
         //Create a gameobject with the component, then set things on the component.
 
-        IDataReader dataReader = dbCommand.ExecuteReader();
-        while (dataReader.Read())
+        IDataReader reader = dbCommand.ExecuteReader();
+        while (reader.Read())
         {
             loopcounter += 1;
 
             GameObject newgp;
             GatheringPoint gpscript;
             Quaternion zeroQuaternion = new Quaternion(0,0,0,0);
-            pointID = dataReader.GetInt32(0);
-            type = (EGatherPointType)dataReader.GetInt32(1);
-            posX = dataReader.GetFloat(2);
-            posY = dataReader.GetFloat(3);
-            posZ = dataReader.GetFloat(4);
+            pointID = reader.GetInt32(0);
+            type = (EGatherPointType)reader.GetInt32(1);
+            posX = reader.GetFloat(2);
+            posY = reader.GetFloat(3);
+            posZ = reader.GetFloat(4);
 
             var posLoad = new Vector3(posX, posY, posZ);
 
@@ -67,6 +68,9 @@ public class GatheringConnection : MonoBehaviour
             }
 
         }
+        reader.Close();
+        reader.Dispose();
+        dbCommand.Dispose();
         ConnectionManager.CloseInstanceConnection();
         Debug.Log("Points Loaded");
     }
@@ -86,13 +90,16 @@ public class GatheringConnection : MonoBehaviour
         string selectQueryTimeGathered = "SELECT timeHarvested FROM GatheringPoints WHERE pointID = @ID;";
         ConnectionManager.CreateNamedParamater("@ID", gatherPointID, dbCommand);
         dbCommand.CommandText = selectQueryTimeGathered;
-        IDataReader dataReader = dbCommand.ExecuteReader();
+        IDataReader reader = dbCommand.ExecuteReader();
         long time = -1;
 
-        while (dataReader.Read())
+        while (reader.Read())
         {
-            time = dataReader.GetInt64(0);
+            time = reader.GetInt64(0);
         }
+        reader.Close();
+        reader.Dispose();
+        dbCommand.Dispose();
 
         ConnectionManager.CloseInstanceConnection();
         return time;

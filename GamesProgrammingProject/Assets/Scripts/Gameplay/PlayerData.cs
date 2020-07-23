@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class PlayerData : MonoBehaviour
 {
-
-    int goldHeld;
+    SerializationConnection _sConnection;
+    int goldHeld = 0;
 
     public void UpdatePlayerGold(int amount)
     {
@@ -25,16 +25,22 @@ public class PlayerData : MonoBehaviour
             
     }
 
+    void LoadPlayerData()
+    {
+        _sConnection.LoadPlayerStatus();
+    }
+     
     void UpdatePlayerQuery()
     {
-        //Query Logic here: Use UserSessionManager and Connection manager functions to update the player table.
+        
     } 
 
     // Start is called before the first frame update
     void Start()
     {
-
-    } 
+        _sConnection = GameObject.FindObjectOfType<SerializationConnection>();
+        LoadPlayerData();
+    }
 
     // Update is called once per frame
     void Update()

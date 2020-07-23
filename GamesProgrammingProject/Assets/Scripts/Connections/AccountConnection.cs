@@ -22,7 +22,7 @@ public class AccountConnection : MonoBehaviour
 
     public async Task<BoolStringResult> VerifyAccountAsync(string username, string passcode)
     {
-        //Debug: Wait for five seconds
+        //Debug: Wait for one second
         await Task.Delay(1000);
         var result = await Task.FromResult<BoolStringResult>(VerifyAccount(username, passcode));
 
@@ -76,7 +76,10 @@ public class AccountConnection : MonoBehaviour
         ///Need Database connection to do this - Should have a class that saves connection. Scriptable object?
 
         string insertQuery = "INSERT into UserAccounts(username, hash, salt) VALUES(@newUsername, @finalHash, @guid);";
-        IDbCommand dbCommand = ConnectionManager.GetCMInstance()._dbConnection.CreateCommand();
+
+        ConnectionManager.OpenInstanceConnection();
+
+        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
 
         ConnectionManager.CreateNamedParamater("@newUsername", newUsername, dbCommand);
         ConnectionManager.CreateNamedParamater("@finalHash", finalHash, dbCommand);
@@ -86,7 +89,12 @@ public class AccountConnection : MonoBehaviour
         ///ExecuteNonQuery returns # of rows affected by command when-
         ///command is a UPDATE, INSERT, or DELETE.
         ///-1 is returned when any other command is used.
-        int returnVal = dbCommand.ExecuteNonQuery();
+        int returnVal = await Task.FromResult(dbCommand.ExecuteNonQuery());
+
+        dbCommand.Dispose();
+
+        ConnectionManager.CloseInstanceConnection();
+
         Debug.Log("Attempted Account creation");
         if (returnVal == 1)
         {
@@ -95,14 +103,17 @@ public class AccountConnection : MonoBehaviour
             if (result._successful)
             {
                 //We add new UserStat row based on user/ID
-                dbCommand.Parameters.Clear();
 
                 string selectQuery = "SELECT ID FROM UserAccounts WHERE username = @username;";
-                ConnectionManager.CreateNamedParamater("@username", newUsername, dbCommand);
-                dbCommand.CommandText = selectQuery;
+
+                ConnectionManager.OpenInstanceConnection();
+                IDbCommand dbCommandVerify = ConnectionManager.GetConnection().CreateCommand();
+
+                ConnectionManager.CreateNamedParamater("@username", newUsername, dbCommandVerify);
+                dbCommandVerify.CommandText = selectQuery;
                 int id = -1;
 
-                IDataReader reader = dbCommand.ExecuteReader();
+                IDataReader reader = dbCommandVerify.ExecuteReader();
                 while (reader.Read())
                 {
                     id = reader.GetInt32(0);
@@ -110,17 +121,24 @@ public class AccountConnection : MonoBehaviour
                 reader.Close();
                 reader.Dispose();
 
-                ConnectionManager.CreateNamedParamater("@ID", id, dbCommand);
+                ConnectionManager.CreateNamedParamater("@id", id, dbCommandVerify);
 
-                insertQuery = "INSERT into UserStats(userID, username) VALUES(@ID, @username);";
+                insertQuery = "INSERT into UserStats(userID, username) VALUES(@id, @username);";
 
-                dbCommand.CommandText = insertQuery;
-                dbCommand.ExecuteNonQuery();
+                dbCommandVerify.CommandText = insertQuery;
+                await Task.FromResult(dbCommandVerify.ExecuteNonQuery());
+
+                insertQuery = "INSERT into PlayerStatus(playerID) VALUES(@id);";
+
+                dbCommandVerify.CommandText = insertQuery;
+
+                await Task.FromResult(dbCommandVerify.ExecuteNonQuery());
+
+                dbCommandVerify.Dispose();
+
+                ConnectionManager.CloseInstanceConnection();
 
                 result._stringMessage = "Account Created!";
-
-
-
                 return result;
             }
             else
@@ -160,19 +178,22 @@ public class AccountConnection : MonoBehaviour
 
         SHA256 sHA256 = SHA256.Create();
         string selectQuerySaltHash = "SELECT salt, hash FROM UserAccounts WHERE username = @username;";
-        IDbCommand dbCommand = ConnectionManager.GetCMInstance()._dbConnection.CreateCommand();
+
+        ConnectionManager.OpenInstanceConnection();
+
+        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         ConnectionManager.CreateNamedParamater("@username", username, dbCommand);
         dbCommand.CommandText = selectQuerySaltHash;
-        IDataReader dataReader = dbCommand.ExecuteReader();
+        IDataReader reader = dbCommand.ExecuteReader();
         string salt = "";
         string hash = "";
 
-        while (dataReader.Read())
+        while (reader.Read())
         {
             //salt = ByteArrayToString(dataReader.GetValue(0) as byte[]);
             //hash = ByteArrayToString(dataReader.GetValue(1) as byte[]);
-            byte[] salttemp = dataReader.GetValue(0) as byte[];
-            byte[] hashtemp = dataReader.GetValue(1) as byte[];
+            byte[] salttemp = reader.GetValue(0) as byte[];
+            byte[] hashtemp = reader.GetValue(1) as byte[];
 
 
             salt = System.Text.Encoding.ASCII.GetString(salttemp);
@@ -180,7 +201,11 @@ public class AccountConnection : MonoBehaviour
 
             //Debug.Log("TestHold");
         }
-        dataReader.Close();
+        reader.Close();
+        reader.Dispose();
+        dbCommand.Dispose();
+
+        ConnectionManager.CloseInstanceConnection();
 
         byte[] encodedPasscode = System.Text.Encoding.ASCII.GetBytes(passcode + salt + username);
         byte[] computedHash = sHA256.ComputeHash(encodedPasscode);
@@ -235,16 +260,24 @@ public class AccountConnection : MonoBehaviour
     {
         BoolStringResult result;
 
-        IDbCommand dbCommand = ConnectionManager.GetCMInstance()._dbConnection.CreateCommand();
+        ConnectionManager.OpenInstanceConnection();
+
+        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         ConnectionManager.CreateNamedParamater("@username", username, dbCommand);
 
         string query = "SELECT username FROM UserAccounts WHERE username = @username;";
         dbCommand.CommandText = query;
 
-        IDataReader dataReader = dbCommand.ExecuteReader();
+        IDataReader reader = dbCommand.ExecuteReader();
 
-        if (dataReader.Read())
+        if (reader.Read())
         {
+            reader.Close();
+            reader.Dispose();
+            dbCommand.Dispose();
+
+            ConnectionManager.CloseInstanceConnection();
+
             //if there's anything to read, we have a matching username, so...
             result._stringMessage = "Username in use.";
             result._successful = false;
@@ -252,6 +285,12 @@ public class AccountConnection : MonoBehaviour
         }
         else
         {
+            reader.Close();
+            reader.Dispose();
+            dbCommand.Dispose();
+
+            ConnectionManager.CloseInstanceConnection();
+
             //Otherwise, there are no results, which mean no matches for that username.
             //The provided username is available, so...
             result._stringMessage = "";
@@ -265,18 +304,26 @@ public class AccountConnection : MonoBehaviour
         if (verified)
         {
             string selectQueryID = "SELECT ID FROM UserAccounts WHERE username = @username;";
-            IDbCommand dbCommand = ConnectionManager.GetCMInstance()._dbConnection.CreateCommand();
+
+            ConnectionManager.OpenInstanceConnection();
+
+            IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
             ConnectionManager.CreateNamedParamater("@username", username, dbCommand);
             dbCommand.CommandText = selectQueryID;
-            IDataReader dataReader = dbCommand.ExecuteReader();
+            IDataReader reader = dbCommand.ExecuteReader();
             //Temp assigned -1 to prevent data collision
             int tempID = -1;
 
-            while (dataReader.Read())
+            while (reader.Read())
             {
-                tempID = dataReader.GetInt32(0);
+                tempID = reader.GetInt32(0);
             }
-            dataReader.Close();
+            reader.Close();
+            reader.Dispose();
+
+            dbCommand.Dispose();
+
+            ConnectionManager.CloseInstanceConnection();
 
             //Create "AuthToken"
             UserSessionManager.CreateUserSessionInstance(tempID, username);

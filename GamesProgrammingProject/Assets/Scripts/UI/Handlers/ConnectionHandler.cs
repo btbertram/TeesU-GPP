@@ -41,15 +41,12 @@ public class ConnectionHandler : MonoBehaviour
         Debug.Log(_username);
         Debug.Log(_passcode);
 
-        ConnectionManager.OpenInstanceConnection();
         var result = await _aConnection.VerifyAccountAsync(_username, _passcode);
         
         _aConnection.GrantAuth(result._successful, _username);
 
         Debug.Log(UserSessionManager.GetUsername());
         Debug.Log(UserSessionManager.GetID());
-
-        ConnectionManager.CloseInstanceConnection();
 
         MenuHandler mHandler = GameObject.FindObjectOfType<MenuHandler>();
         _mHandler.UpdateConfirmationMessageText(result._stringMessage + " Login", result._successful);
@@ -76,11 +73,7 @@ public class ConnectionHandler : MonoBehaviour
         Debug.Log(_username);
         Debug.Log(_passcode);
 
-        ConnectionManager.OpenInstanceConnection();
-
         var result = await _aConnection.CreateAccountAsync(_username, _passcode);
-
-        ConnectionManager.CloseInstanceConnection();
 
         _mHandler.UpdateConfirmationMessageText(result._stringMessage + " Registration", result._successful);
         _mHandler.ToggleCanvas(_mHandler.GetLoadingCanvas());
@@ -92,11 +85,7 @@ public class ConnectionHandler : MonoBehaviour
     {
         _sConnection = GameObject.FindObjectOfType<SerializationConnection>();
 
-        ConnectionManager.OpenInstanceConnection();
-
-        await _sConnection.SavePlayerStatus();
-
-        ConnectionManager.CloseInstanceConnection();
+        await _sConnection.AsyncSaveFullPlayerStatus();
 
     }
 

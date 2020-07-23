@@ -10,7 +10,7 @@ using System.Drawing;
 /// A script to automatically populate the database table "GatheringPoints" based on gathering points placed in the editor/designer.
 /// I'd rather spend time automating this than making 50 queries prone to error due to manual entry. This also helps me practice more code anyway.
 /// </summary>
-public class GPointInsert : MonoBehaviour
+public class GPointInsertConnection : MonoBehaviour
 {
 
     GatheringPoint[] gatheringPoints;
@@ -39,7 +39,8 @@ public class GPointInsert : MonoBehaviour
         string deleteAllRecordsFromGatheringPoints = "DELETE FROM GatheringPoints;";
         dbCommand.CommandText = deleteAllRecordsFromGatheringPoints;
         dbCommand.ExecuteNonQuery();
-        
+        dbCommand.Dispose();
+
         ConnectionManager.CloseInstanceConnection();
     }
 
@@ -89,6 +90,8 @@ public class GPointInsert : MonoBehaviour
             dbCommand.CommandText = insertGatheringPoint;
 
             dbCommand.ExecuteNonQuery();
+
+            dbCommand.Dispose();
         }
 
         ConnectionManager.CloseInstanceConnection();

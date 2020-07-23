@@ -41,7 +41,6 @@ public sealed class ConnectionManager
     }
     #endregion
 
-
     #region Utility
 
     /// <summary>
@@ -50,39 +49,45 @@ public sealed class ConnectionManager
     /// <param name="dbConnection">The Database connection object for the database in use.</param> 
     void DebugCode()
     {
+        OpenInstanceConnection();
         string selectQuery = "SELECT * FROM TestItem;";
         IDbCommand dbCommand = _dbConnection.CreateCommand();
         dbCommand.CommandText = selectQuery;
-        IDataReader dataReader = dbCommand.ExecuteReader();
+        IDataReader reader = dbCommand.ExecuteReader();
 
-        while (dataReader.Read())
+        while (reader.Read())
         {
-            string itemName = dataReader.GetString(1);
-            int wealthValue = dataReader.GetInt32(2);
+            string itemName = reader.GetString(1);
+            int wealthValue = reader.GetInt32(2);
 
-            int id = dataReader.GetInt32(0);
+            int id = reader.GetInt32(0);
 
 
             Debug.Log("Name: " + itemName + ". Value: " + wealthValue + ". ID: " + id + ".");
         }
-        dataReader.Close();
+        reader.Close();
 
         dbCommand.CommandText = "SELECT * FROM UserAccounts;";
 
         //IDataReader dataReader = dbCommand.ExecuteReader();
 
         //Note that this line will currently fail without an active data reader
-        while (dataReader.Read())
+        while (reader.Read())
         {
-            string userName = dataReader.GetString(1);
-            var salt = ByteArrayContentsToString(dataReader.GetValue(2) as byte[]);
-            var hash = ByteArrayContentsToString(dataReader.GetValue(3) as byte[]);
+            string userName = reader.GetString(1);
+            var salt = ByteArrayContentsToString(reader.GetValue(2) as byte[]);
+            var hash = ByteArrayContentsToString(reader.GetValue(3) as byte[]);
 
-            int id = dataReader.GetInt32(0);
+            int id = reader.GetInt32(0);
 
 
             Debug.Log("User: " + userName + ". Salt: " + salt + ". ID: " + id + ". Hash: " + hash + ".");
         }
+        reader.Close();
+        reader.Dispose();
+        dbCommand.Dispose();
+
+        CloseInstanceConnection();
     }
 
     /// <summary>
@@ -143,13 +148,16 @@ public sealed class ConnectionManager
         IDbCommand dbCommand = GetConnection().CreateCommand();
         string selectQueryTimeNow = "SELECT strftime('%s','now');";
         dbCommand.CommandText = selectQueryTimeNow;
-        IDataReader dataReader = dbCommand.ExecuteReader();
+        IDataReader reader = dbCommand.ExecuteReader();
 
         long time = -1;
-        while (dataReader.Read())
+        while (reader.Read())
         {
-            time = dataReader.GetInt64(0);
+            time = reader.GetInt64(0);
         }
+        reader.Close();
+        reader.Dispose();
+        dbCommand.Dispose();
 
         CloseInstanceConnection();
         return time;
@@ -175,10 +183,5 @@ public sealed class ConnectionManager
 
     #endregion
 
-
-
-   
-    
-
-
+       
 }

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Enumerator that corresponds to the input Axis in Unity: Edit -> Project Settings -> Input
+/// </summary>
 public enum EInput
 {
     Horizontal,

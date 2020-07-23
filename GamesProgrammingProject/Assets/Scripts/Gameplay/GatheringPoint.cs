@@ -12,7 +12,6 @@ public class GatheringPoint : MonoBehaviour
     int _pointID;
     public EGatherPointType _type;
     long _respawnTimer;
-    //Vector3 _pos;
     bool _isActive;
     GatheringConnection gatheringPointConneciton;
 
@@ -20,13 +19,7 @@ public class GatheringPoint : MonoBehaviour
     {
         _pointID = ID;
         _type = type;
-        //_pos = pos;
     }
-
-    //public Vector3 GetPos()
-    //{
-    //    return _pos;
-    //}
 
     public EGatherPointType GetPointType()
     {
