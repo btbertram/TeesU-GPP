@@ -15,5 +15,6 @@ public enum EInput
     Jump,
     MouseX,
     MouseY,
-    Cancel
+    Cancel,
+    Use
 }

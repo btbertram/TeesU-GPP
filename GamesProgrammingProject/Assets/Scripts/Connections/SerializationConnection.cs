@@ -60,9 +60,8 @@ public class SerializationConnection : MonoBehaviour
 
     public void LoadPlayerStatus()
     {
-        //var playerObject = GameObject.Find("Player");
-
-        Vector3 loadPos = new Vector3(0,0,0);
+        //Default pos
+        Vector3 loadPos = new Vector3(150, 1, 150);
         int loadGold = 0;
         string selectQuery = "SELECT * FROM PlayerStatus WHERE playerID = @id;";
 

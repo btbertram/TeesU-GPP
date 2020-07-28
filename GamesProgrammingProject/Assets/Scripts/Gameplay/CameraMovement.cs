@@ -30,12 +30,11 @@ public class CameraMovement : MonoBehaviour
     {
         if (Input.GetButton(EInput.Fire2.ToString()))
         {       
-            //this.transform.RotateAround(CameraRotationObject.transform.position, Vector3.up, Input.GetAxis(EInput.MouseX.ToString()) * CameraRotationSpeed * Time.deltaTime);
             CameraFollowObject.transform.RotateAround(CameraRotationObject.transform.position, Vector3.up, Input.GetAxis(EInput.MouseX.ToString()) * CameraRotationSpeed * Time.deltaTime);
 
             CameraRotationObject.transform.Rotate(Vector3.up, Input.GetAxis(EInput.MouseX.ToString()) * CameraRotationSpeed * Time.deltaTime);
             PlayerDirectionObject.transform.Rotate(Vector3.up, Input.GetAxis(EInput.MouseX.ToString()) * CameraRotationSpeed * Time.deltaTime);
-            CameraFollowObject.transform.RotateAround(CameraRotationObject.transform.position, CameraRotationObject.transform.right, Input.GetAxis(EInput.MouseY.ToString()) * CameraRotationSpeed * Time.deltaTime);            
+            CameraFollowObject.transform.RotateAround(CameraRotationObject.transform.position, -CameraRotationObject.transform.right, Input.GetAxis(EInput.MouseY.ToString()) * CameraRotationSpeed * Time.deltaTime);            
         }
 
         if (smoothCamOn)

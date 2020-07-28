@@ -9,6 +9,7 @@ public class PlayerControl : MonoBehaviour
     //Set this in Editor
     public GameObject pauseMenu;
     GameObject focusedMenu;
+    GameObject focusedInteractable;
 
     public void Pause()
     {
@@ -24,6 +25,15 @@ public class PlayerControl : MonoBehaviour
                 _mHandler.ToggleCanvas(pauseMenu);
                 //Also toggle time here, call from GameManager
             }
+        }
+    }
+
+
+    public void Interact()
+    {
+        if (Input.GetButton(EInput.Use.ToString()))
+        {
+
         }
     }
 

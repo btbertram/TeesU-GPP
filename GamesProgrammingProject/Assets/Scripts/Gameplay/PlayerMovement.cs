@@ -5,10 +5,12 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    Transform _playerTransform;
+    Transform _playerModelTransform;
+    Transform _playerInteractCollider;
     CharacterController _charController;
     Vector3 _playerVelocity;
-    public GameObject Camera;
+    Camera Camera;
+    CameraMovement CamMove;
     public GameObject MovementObject;
     public float jumpStrength = 1;
     public float playerSpeed = 15;
@@ -18,9 +20,12 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _playerTransform = GetComponentInParent<Transform>();
+        _playerModelTransform = GameObject.Find("PlayerModel").transform;
+        _playerInteractCollider = GameObject.Find("PlayerInteractionCollider").transform;
         _charController = GetComponentInParent<CharacterController>();
         _playerVelocity = Vector3.zero;
+        Camera = GameObject.FindObjectOfType<Camera>();
+        CamMove = Camera.GetComponentInParent<CameraMovement>();
     }
 
     // Update is called once per frame
@@ -46,7 +51,10 @@ public class PlayerMovement : MonoBehaviour
                 MovementObject.transform.right * Input.GetAxis(EInput.Horizontal.ToString()));
 
             Vector3 move = normalizedMove * playerSpeed * Time.deltaTime;
+            
             _charController.Move(move);
+            _playerModelTransform.rotation = CamMove.PlayerDirectionObject.transform.rotation;
+            _playerInteractCollider.rotation = CamMove.PlayerDirectionObject.transform.rotation;
         }
        
         _charController.Move(_playerVelocity * Time.deltaTime);
