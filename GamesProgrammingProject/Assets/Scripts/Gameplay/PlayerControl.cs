@@ -36,11 +36,11 @@ public class PlayerControl : MonoBehaviour
         {
             Debug.Log("Attempting Interact");
 
-            var interactable = _interactCollision.GetFirstColliderFromCollisionCollection().gameObject.GetComponent<IInteractable>();
+            var interactable = _interactCollision.GetFirstInteractableFromCollisionCollection();
 
             interactable.InteractionTriggered();
             _interactCollision.ToggleCanInteract();
-            _interactCollision.colliders.Remove(_interactCollision.GetFirstColliderFromCollisionCollection());
+            _interactCollision.interacters.Remove(_interactCollision.GetFirstInteractableFromCollisionCollection());
 
         }
     }

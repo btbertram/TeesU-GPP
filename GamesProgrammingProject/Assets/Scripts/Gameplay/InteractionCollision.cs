@@ -5,8 +5,7 @@ using UnityEngine;
 public class InteractionCollision : MonoBehaviour
 {
     CharacterController _characterControllerRef;
-
-    public List<Collider> colliders;
+    public List<IInteractable> interacters = new List<IInteractable>();
 
     private bool canInteract = false;
 
@@ -15,11 +14,15 @@ public class InteractionCollision : MonoBehaviour
         if(!other.Equals(_characterControllerRef))
         {
             Debug.Log("Hit something: " + other);
-            colliders.Add(other);
-            if(colliders.Count > 0)
+            var otherInteractable = other.gameObject.GetComponent<IInteractable>();
+            interacters.Add(otherInteractable);
+            otherInteractable.ToggleInteractionText();
+            if(interacters.Count > 0)
             {
                 canInteract = true;
+
             }
+
         }
         else
         {
@@ -33,11 +36,15 @@ public class InteractionCollision : MonoBehaviour
     {
         Debug.Log("Left Something:" + other);
 
-        if(colliders.Count > 0)
+        if(interacters.Count > 0)
         {
-            colliders.Remove(other);
-            //colliders.TrimExcess();
-            if(colliders.Count <= 0)
+            var otherInteractable = other.gameObject.GetComponent<IInteractable>();
+            interacters.Remove(otherInteractable);
+            if (otherInteractable.TextRenderer.enabled)
+            {
+                otherInteractable.ToggleInteractionText();
+            }
+            if(interacters.Count <= 0)
             {
                 canInteract = false;
             }
@@ -58,9 +65,9 @@ public class InteractionCollision : MonoBehaviour
         canInteract = !canInteract;
     }
 
-    public Collider GetFirstColliderFromCollisionCollection()
+    public IInteractable GetFirstInteractableFromCollisionCollection()
     {
-        return colliders[0];
+        return interacters[0];
     }
 
     // Start is called before the first frame update

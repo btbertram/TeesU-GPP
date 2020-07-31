@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices.WindowsRuntime;
+using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -17,7 +18,9 @@ public class GatheringPoint : MonoBehaviour, IInteractable
     bool _isActive;
     GatheringConnection gatheringPointConneciton;
     private EInteractableType _interactableType;
+    private MeshRenderer _textRenderer;
     EInteractableType IInteractable.InteractableType { get => _interactableType; set => _interactableType = value; }
+    MeshRenderer IInteractable.TextRenderer { get => _textRenderer; set => _textRenderer = value; }
 
     public void LoadPoint(int ID, EGatherPointType type)
     {
@@ -56,6 +59,7 @@ public class GatheringPoint : MonoBehaviour, IInteractable
     {
         gatheringPointConneciton = FindObjectOfType<GatheringConnection>();
         _interactableType = EInteractableType.GatheringPoint;
+        _textRenderer = this.gameObject.GetComponentInChildren<TextMesh>().gameObject.GetComponent<MeshRenderer>();
 
         switch (_type)
         {
@@ -77,7 +81,7 @@ public class GatheringPoint : MonoBehaviour, IInteractable
     // Update is called once per frame
     void Update()
     {
-        
+        TextFaceCamera();
     }
 
     public void InteractionTriggered()
@@ -89,6 +93,7 @@ public class GatheringPoint : MonoBehaviour, IInteractable
                 GameObject.FindObjectOfType<PlayerData>().gameObject.SendMessage(EMessagedFunc.UpdatePlayerGold.ToString(), 10);
                 gatheringPointConneciton.RecordGatherTime(_pointID);
                 _isActive = false;
+                ToggleInteractionText();
                 this.gameObject.GetComponent<MeshRenderer>().enabled = _isActive;
                 this.gameObject.GetComponent<BoxCollider>().enabled = _isActive;
 
@@ -98,4 +103,22 @@ public class GatheringPoint : MonoBehaviour, IInteractable
                 break;
         }
     }
+
+    public void ToggleInteractionText()
+    {
+        _textRenderer.enabled = !_textRenderer.enabled;
+    }
+
+    public void TextFaceCamera()
+    {
+        if (_textRenderer.enabled)
+        {
+            Vector3 camFacing = GameObject.FindObjectOfType<Camera>().transform.position;
+
+            _textRenderer.transform.LookAt(camFacing);
+            _textRenderer.transform.Rotate(Vector3.up, 180);
+
+        }
+    }
+
 }

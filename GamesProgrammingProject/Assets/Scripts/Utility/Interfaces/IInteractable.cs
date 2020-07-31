@@ -5,5 +5,10 @@ using UnityEngine;
 public interface IInteractable
 {
     EInteractableType InteractableType { get; set; }
+    MeshRenderer TextRenderer { get; set; }
+
     void InteractionTriggered();
+
+    void ToggleInteractionText();
+
 }
