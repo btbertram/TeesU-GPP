@@ -50,7 +50,16 @@ public class PlayerMovement : MonoBehaviour
             var normalizedMove = Vector3.Normalize(MovementObject.transform.forward * Input.GetAxis(EInput.Vertical.ToString()) + 
                 MovementObject.transform.right * Input.GetAxis(EInput.Horizontal.ToString()));
 
-            Vector3 move = normalizedMove * playerSpeed * Time.deltaTime;
+            Vector3 move;
+
+            if (Input.GetButton(EInput.Sprint.ToString()))
+            {
+                move = normalizedMove * (playerSpeed * 2) * Time.deltaTime;
+            }
+            else
+            {
+                move = normalizedMove * playerSpeed * Time.deltaTime;
+            }
             
             _charController.Move(move);
             _playerModelTransform.rotation = CamMove.PlayerDirectionObject.transform.rotation;

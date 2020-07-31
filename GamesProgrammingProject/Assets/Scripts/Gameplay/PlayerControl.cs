@@ -10,6 +10,7 @@ public class PlayerControl : MonoBehaviour
     public GameObject pauseMenu;
     GameObject focusedMenu;
     GameObject focusedInteractable;
+    private InteractionCollision _interactCollision;
 
     public void Pause()
     {
@@ -31,8 +32,15 @@ public class PlayerControl : MonoBehaviour
 
     public void Interact()
     {
-        if (Input.GetButton(EInput.Use.ToString()))
+        if (Input.GetButtonDown(EInput.Use.ToString()) && _interactCollision.CanInteract())
         {
+            Debug.Log("Attempting Interact");
+
+            var interactable = _interactCollision.GetFirstColliderFromCollisionCollection().gameObject.GetComponent<IInteractable>();
+
+            interactable.InteractionTriggered();
+            _interactCollision.ToggleCanInteract();
+
 
         }
     }
@@ -51,11 +59,14 @@ public class PlayerControl : MonoBehaviour
     void Start()
     {
         _mHandler = GameObject.FindObjectOfType<MenuHandler>();
+        _interactCollision = GameObject.FindObjectOfType<InteractionCollision>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
         Pause();
+        Interact();
     }
 }

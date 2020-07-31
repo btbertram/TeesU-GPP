@@ -106,6 +106,26 @@ public class GatheringConnection : MonoBehaviour
 
     }
 
+    public async void RecordGatherTime(int gatherPointID)
+    {
+        long currentTime = await Task.FromResult(ConnectionManager.AsyncQueryTimeNow().Result);
+
+        ConnectionManager.OpenInstanceConnection();
+
+        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        
+        string updateQuery = "UPDATE GatheringPoints SET timeHarvested = @currentTime WHERE PointID = @ID;";
+        ConnectionManager.CreateNamedParamater("@currentTime", currentTime, dbCommand);
+        ConnectionManager.CreateNamedParamater("@ID", gatherPointID, dbCommand);
+
+        dbCommand.CommandText = updateQuery;
+        await Task.FromResult(dbCommand.ExecuteNonQuery());
+
+        dbCommand.Dispose();
+        ConnectionManager.CloseInstanceConnection();
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {

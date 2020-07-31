@@ -153,7 +153,9 @@ public sealed class ConnectionManager
         long time = -1;
         while (reader.Read())
         {
-            time = reader.GetInt64(0);
+            //Raw value returned is as a "Time String". So, we must convert
+            string timeString = reader.GetString(0);
+            time = Int64.Parse(timeString);
         }
         reader.Close();
         reader.Dispose();

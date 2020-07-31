@@ -13,6 +13,7 @@ public enum EInput
     Fire2,
     Fire3,
     Jump,
+    Sprint,
     MouseX,
     MouseY,
     Cancel,

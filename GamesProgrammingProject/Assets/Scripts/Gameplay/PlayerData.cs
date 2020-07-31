@@ -12,6 +12,7 @@ public class PlayerData : MonoBehaviour
     public void UpdatePlayerGold(int amount)
     {
         goldHeld += amount;
+        Debug.Log(goldHeld);
     }
 
     public int GetGoldHeld()
