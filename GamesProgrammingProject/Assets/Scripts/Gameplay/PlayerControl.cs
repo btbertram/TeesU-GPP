@@ -40,7 +40,7 @@ public class PlayerControl : MonoBehaviour
 
             interactable.InteractionTriggered();
             _interactCollision.ToggleCanInteract();
-
+            _interactCollision.colliders.Remove(_interactCollision.GetFirstColliderFromCollisionCollection());
 
         }
     }

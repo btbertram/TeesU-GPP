@@ -12,6 +12,7 @@ public class GatheringPoint : MonoBehaviour, IInteractable
 {
     int _pointID;
     public EGatherPointType _type;
+    //In Seconds, for comparing to Unix time
     long _respawnTimer;
     bool _isActive;
     GatheringConnection gatheringPointConneciton;
@@ -60,7 +61,7 @@ public class GatheringPoint : MonoBehaviour, IInteractable
         {
             case EGatherPointType.GoldGatherType:
             {
-                    _respawnTimer = 2000;
+                    _respawnTimer = 2;
                     GameObject.FindObjectOfType<WorldManager>().AddToGatheringPointsList(this);
                 break;
             }

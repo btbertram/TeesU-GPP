@@ -36,6 +36,7 @@ public class InteractionCollision : MonoBehaviour
         if(colliders.Count > 0)
         {
             colliders.Remove(other);
+            //colliders.TrimExcess();
             if(colliders.Count <= 0)
             {
                 canInteract = false;

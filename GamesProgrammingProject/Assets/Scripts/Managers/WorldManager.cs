@@ -8,31 +8,13 @@ public class WorldManager : MonoBehaviour
     Timer WorldUpdateTimer;
     List<GatheringPoint> _gatheringPoints;
 
-    // Start is called before the first frame update
-    void Start()
+    IEnumerator WorldUpdateRate()
     {
-        _gatheringPoints = new List<GatheringPoint>();
-        //foreach(GatheringPoint x in _gatheringPoints)
-        //{
-        //    Debug.Log(x.gameObject.name);
-        //}
-
-        TimerSetup();
-        WorldUpdateTimer.Start();
-        Debug.Log("World Started: " + WorldUpdateTimer.Enabled);
-    }
-
-    void TimerSetup()
-    {
-        WorldUpdateTimer = new Timer(1000);
-        WorldUpdateTimer.AutoReset = true;
-        WorldUpdateTimer.Elapsed += OnWorldUpdateTimerElapsed;
-    }
-
-    private void OnWorldUpdateTimerElapsed(object sender, ElapsedEventArgs e)
-    {
-        //Debug.Log("Ding!");
-        CheckGatheringPointGrowth();
+        for(; ; )
+        {
+            CheckGatheringPointGrowth();
+            yield return new WaitForSeconds(3);
+        }
     }
 
     private void CheckGatheringPointGrowth()
@@ -49,9 +31,16 @@ public class WorldManager : MonoBehaviour
         _gatheringPoints.Add(point);
     }
 
+    // Start is called before the first frame update
+    void Start()
+    {
+        _gatheringPoints = new List<GatheringPoint>();
+        StartCoroutine(WorldUpdateRate());
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
