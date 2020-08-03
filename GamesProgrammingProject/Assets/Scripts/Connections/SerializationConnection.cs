@@ -4,6 +4,9 @@ using System.Data;
 using System.Threading.Tasks;
 using UnityEngine;
 
+/// <summary>
+/// A connection class which communicates the player's data state, such as inventory, currency, etc. to the database.
+/// </summary>
 public class SerializationConnection : MonoBehaviour
 {
 

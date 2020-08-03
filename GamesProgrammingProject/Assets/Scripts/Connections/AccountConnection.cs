@@ -5,7 +5,9 @@ using UnityEngine;
 using System.Data;
 using Mono.Data.Sqlite;
 using System.Security.Cryptography;
-
+/// <summary>
+/// A Connection Class which communicates with the database for account related queries and modifications.
+/// </summary>
 public class AccountConnection : MonoBehaviour
 {
 

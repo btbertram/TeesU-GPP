@@ -4,5 +4,7 @@ using UnityEngine;
 
 public enum EMessagedFunc
 {
-    UpdatePlayerGold
+    UpdatePlayerGold,
+    UpdateGoldTotal,
+    UpdateGatheringPointsTotal
 }

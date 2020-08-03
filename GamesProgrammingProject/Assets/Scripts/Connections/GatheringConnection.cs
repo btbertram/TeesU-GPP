@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// A Class that implents database connections and queries for GatheringPoint objects.
+/// A Connection Class that implents database connections and queries for GatheringPoint objects.
 /// </summary>
 public class GatheringConnection : MonoBehaviour
 {

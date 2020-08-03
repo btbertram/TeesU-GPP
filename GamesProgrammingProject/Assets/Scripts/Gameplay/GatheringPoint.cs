@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices.WindowsRuntime;
-using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -91,6 +90,8 @@ public class GatheringPoint : MonoBehaviour, IInteractable
         {
             case (int)EGatherPointType.GoldGatherType:
                 GameObject.FindObjectOfType<PlayerData>().gameObject.SendMessage(EMessagedFunc.UpdatePlayerGold.ToString(), 10);
+                GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGoldTotal.ToString(), 10);
+                GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGatheringPointsTotal.ToString(), 1);
                 gatheringPointConneciton.RecordGatherTime(_pointID);
                 _isActive = false;
                 ToggleInteractionText();

@@ -18,7 +18,7 @@ public class PlayerData : MonoBehaviour
     public int GetGoldHeld()
     {
         return goldHeld;
-    } 
+    }
 
     public async Task AsyncUpdatePlayerDataTable()
     {
