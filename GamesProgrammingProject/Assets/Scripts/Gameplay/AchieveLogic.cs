@@ -55,12 +55,12 @@ public class AchieveLogic
     /// Utility function to check all achievements.
     /// Can be called at game start to unlock "missed" or altered achievements. 
     /// </summary>
-    void CheckUnlockStatusAll()
-    {
-        for (int x = 0; x < (int)EAchievements.Error; x++)
-        {
-            CheckUnlockStatus((EAchievements)x);
-        }
-    }
+    //public IEnumerable<bool> CheckUnlockStatusAll()
+    //{
+    //    for (int x = 0; x < (int)EAchievements.Error; x++)
+    //    {
+    //        yield return CheckUnlockStatus((EAchievements)x);
+    //    }
+    //}
 
 }
