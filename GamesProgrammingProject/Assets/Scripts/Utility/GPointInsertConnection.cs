@@ -33,7 +33,7 @@ public class GPointInsertConnection : MonoBehaviour
     private void ClearGatheringPointsDatabaseTable()
     {
         Debug.Log("Reached Clear");
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         
         string deleteAllRecordsFromGatheringPoints = "DELETE FROM GatheringPoints;";
@@ -41,7 +41,7 @@ public class GPointInsertConnection : MonoBehaviour
         dbCommand.ExecuteNonQuery();
         dbCommand.Dispose();
 
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
     }
 
     private async void AsyncPopulateGatheringPointDatabaseTable(GatheringPoint[] points)
@@ -52,7 +52,7 @@ public class GPointInsertConnection : MonoBehaviour
     private void PopulateGatheringPointDatabaseTable(GatheringPoint[] points)
     {
         ConnectionManager.GetCMInstance();
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         string insertGatheringPoint = "INSERT INTO GatheringPoints VALUES(@pointID, @gpType, @posX, @posY, @posZ, @goldVal, @timeHarvested);";
         int idCounter = -1;
@@ -94,7 +94,7 @@ public class GPointInsertConnection : MonoBehaviour
             dbCommand.Dispose();
         }
 
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
 
     }
 

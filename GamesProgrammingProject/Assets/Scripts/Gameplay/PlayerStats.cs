@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -30,13 +31,15 @@ public class PlayerStats : MonoBehaviour
 
     #region Stat Updaters
 
-    public void UpdateGatheringPointsTotal(int amount)
+    public async Task UpdateGatheringPointsTotal(int amount)
     {
         _playerStatBlock.totalGatheringPointsHarvested += amount;
         if(_achieveLogic.CheckUnlockStatus(EAchievements.TotalGathers))
         {
             _playerAchievementBlock.totalGathersUnlocked = true;
         }
+        await _statsConnection.AsyncUpdatePlayerStat(EUserStats.nodesHarvested, _playerStatBlock);
+        
     }
 
     public void UpdateDistanceTotal(float amount)
@@ -47,15 +50,17 @@ public class PlayerStats : MonoBehaviour
             _playerAchievementBlock.totalDistanceUnlocked = true;
         }
     }
-    public void UpdateGoldTotal(int amount)
+    public async Task UpdateGoldTotal(int amount)
     {
         _playerStatBlock.totalGoldCollected += amount;
         Debug.Log("Total Gold: " + _playerStatBlock.totalGoldCollected);
-        if (_achieveLogic.CheckUnlockStatus(EAchievements.TotalGold))
+        if (!_playerAchievementBlock.totalGoldUnlocked && _achieveLogic.CheckUnlockStatus(EAchievements.TotalGold))
         {
             _playerAchievementBlock.totalGoldUnlocked = true;
             Debug.Log("Collected 100 gold! " + _playerAchievementBlock.totalGoldUnlocked + " " + _playerStatBlock.totalGoldCollected);
+            await _statsConnection.AsyncUpdatePlayerAchievementUnlock(EAchievements.TotalGold, _playerAchievementBlock.totalGoldUnlocked);
         }
+        await _statsConnection.AsyncUpdatePlayerStat(EUserStats.goldEarned, _playerStatBlock);
     }
 
     #endregion

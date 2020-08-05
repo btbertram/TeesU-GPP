@@ -24,7 +24,7 @@ public class GatheringConnection : MonoBehaviour
         Debug.Log("Loading Points...");
         string selectGatheringPoints = "SELECT * FROM GatheringPoints;";
 
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         dbCommand.CommandText = selectGatheringPoints;
@@ -71,7 +71,7 @@ public class GatheringConnection : MonoBehaviour
         reader.Close();
         reader.Dispose();
         dbCommand.Dispose();
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
         Debug.Log("Points Loaded");
     }
 
@@ -84,7 +84,7 @@ public class GatheringConnection : MonoBehaviour
 
     private long QueryGatherTime(int gatherPointID)
     {
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         string selectQueryTimeGathered = "SELECT timeHarvested FROM GatheringPoints WHERE pointID = @ID;";
@@ -101,16 +101,17 @@ public class GatheringConnection : MonoBehaviour
         reader.Dispose();
         dbCommand.Dispose();
 
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
         return time;
 
     }
 
     public async void RecordGatherTime(int gatherPointID)
     {
-        long currentTime = await Task.FromResult(ConnectionManager.AsyncQueryTimeNow().Result);
+        //long currentTime = 1;
+        long currentTime = await ConnectionManager.AsyncQueryTimeNow();
 
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         
@@ -122,7 +123,7 @@ public class GatheringConnection : MonoBehaviour
         await Task.FromResult(dbCommand.ExecuteNonQuery());
 
         dbCommand.Dispose();
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
     }
 
 

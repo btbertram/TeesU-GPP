@@ -20,7 +20,7 @@ public class SerializationConnection : MonoBehaviour
 
         string updateQuery = "UPDATE PlayerStatus SET posX = @posX, posY = @posY, posZ = @posZ, goldCount = @currentGold WHERE playerID = @id;";
 
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
         
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         ConnectionManager.CreateNamedParamater("@posX", playerPos.x, dbCommand);
@@ -35,7 +35,7 @@ public class SerializationConnection : MonoBehaviour
 
         dbCommand.Dispose();
         
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
 
     }
 
@@ -45,7 +45,7 @@ public class SerializationConnection : MonoBehaviour
 
         string updateQuery = "UPDATE PlayerStatus SET goldCount = @currentGold WHERE playerID = @id;";
 
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         ConnectionManager.CreateNamedParamater("@currentGold", playerGold, dbCommand);
@@ -57,7 +57,7 @@ public class SerializationConnection : MonoBehaviour
 
         dbCommand.Dispose();
 
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
     }
 
 
@@ -68,7 +68,7 @@ public class SerializationConnection : MonoBehaviour
         int loadGold = 0;
         string selectQuery = "SELECT * FROM PlayerStatus WHERE playerID = @id;";
 
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         ConnectionManager.CreateNamedParamater("@id", UserSessionManager.GetID(), dbCommand);
@@ -87,7 +87,7 @@ public class SerializationConnection : MonoBehaviour
         reader.Dispose();
         dbCommand.Dispose();
 
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
 
         var pData = playerObject.GetComponent<PlayerData>();
         int initGoldVal = pData.GetGoldHeld();

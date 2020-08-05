@@ -92,6 +92,7 @@ public class GatheringPoint : MonoBehaviour, IInteractable
                 GameObject.FindObjectOfType<PlayerData>().gameObject.SendMessage(EMessagedFunc.UpdatePlayerGold.ToString(), 10);
                 GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGoldTotal.ToString(), 10);
                 GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGatheringPointsTotal.ToString(), 1);
+                //long currentTime = ConnectionManager.AsyncQueryTimeNow().Result;
                 gatheringPointConneciton.RecordGatherTime(_pointID);
                 _isActive = false;
                 ToggleInteractionText();

@@ -68,5 +68,25 @@ public class PlayerControl : MonoBehaviour
     {
         Pause();
         Interact();
+        DEBUGTestUserInfoInput();
+        DEBUGTestDBConnectionInput();
+    }
+
+    void DEBUGTestUserInfoInput()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            Debug.Log(UserSessionManager.GetUsername());
+            Debug.Log(UserSessionManager.GetID());
+
+        }
+    }
+
+    void DEBUGTestDBConnectionInput()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            Debug.Log(ConnectionManager.GetConnection().State);
+        }
     }
 }

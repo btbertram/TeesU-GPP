@@ -33,7 +33,6 @@ public class PlayerMovement : MonoBehaviour
     {
         Gravity();
         Movement();
-        DEBUGTestUserInfoInput();
     }
 
     void Movement()
@@ -81,16 +80,5 @@ public class PlayerMovement : MonoBehaviour
 
 
     }
-
-    void DEBUGTestUserInfoInput()
-    {
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            Debug.Log(UserSessionManager.GetUsername());
-            Debug.Log(UserSessionManager.GetID());
-
-        }
-    }
-
 
 }

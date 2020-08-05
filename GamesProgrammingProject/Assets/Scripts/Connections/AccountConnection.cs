@@ -15,7 +15,7 @@ public class AccountConnection : MonoBehaviour
     public async Task<BoolStringResult> CreateAccountAsync(string username, string passcode)
     {
         //Debug: Wait for two seconds
-        await Task.Delay(2000);
+        await Task.Delay(50);
 
         var result = await CreateAccount(username, passcode);
 
@@ -24,8 +24,8 @@ public class AccountConnection : MonoBehaviour
 
     public async Task<BoolStringResult> VerifyAccountAsync(string username, string passcode)
     {
-        //Debug: Wait for one second
-        await Task.Delay(1000);
+        //Wait for a fraction of a second, or Unity doesn't have time to fire other events.
+        await Task.Delay(50);
         var result = await Task.FromResult<BoolStringResult>(VerifyAccount(username, passcode));
 
         return result;
@@ -79,7 +79,7 @@ public class AccountConnection : MonoBehaviour
 
         string insertQuery = "INSERT into UserAccounts(username, hash, salt) VALUES(@newUsername, @finalHash, @guid);";
 
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
 
@@ -95,7 +95,7 @@ public class AccountConnection : MonoBehaviour
 
         dbCommand.Dispose();
 
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
 
         Debug.Log("Attempted Account creation");
         if (returnVal == 1)
@@ -108,37 +108,45 @@ public class AccountConnection : MonoBehaviour
 
                 string selectQuery = "SELECT ID FROM UserAccounts WHERE username = @username;";
 
-                ConnectionManager.OpenInstanceConnection();
+                //ConnectionManager.OpenInstanceConnection();
                 IDbCommand dbCommandVerify = ConnectionManager.GetConnection().CreateCommand();
 
                 ConnectionManager.CreateNamedParamater("@username", newUsername, dbCommandVerify);
                 dbCommandVerify.CommandText = selectQuery;
-                int id = -1;
+                int uid = -1;
 
                 IDataReader reader = dbCommandVerify.ExecuteReader();
                 while (reader.Read())
                 {
-                    id = reader.GetInt32(0);
+                    uid = reader.GetInt32(0);
                 }
                 reader.Close();
                 reader.Dispose();
 
-                ConnectionManager.CreateNamedParamater("@id", id, dbCommandVerify);
+                ConnectionManager.CreateNamedParamater("@uid", uid, dbCommandVerify);
 
-                insertQuery = "INSERT into UserStats(userID, username) VALUES(@id, @username);";
+                insertQuery = "INSERT into UserStats(userID, username) VALUES(@uid, @username);";
 
                 dbCommandVerify.CommandText = insertQuery;
                 await Task.FromResult(dbCommandVerify.ExecuteNonQuery());
 
-                insertQuery = "INSERT into PlayerStatus(playerID) VALUES(@id);";
+                insertQuery = "INSERT into PlayerStatus(playerID) VALUES(@uid);";
 
                 dbCommandVerify.CommandText = insertQuery;
 
                 await Task.FromResult(dbCommandVerify.ExecuteNonQuery());
+
+                for(int x = 0; x < (int)EAchievements.Error; x++)
+                {
+                    int achieveID = x;
+                    insertQuery = "INSERT into PlayerAchievements(playerID, achievementID, unlocked) VALUES(@uid, " + x + ", 0);";
+                    dbCommandVerify.CommandText = insertQuery;
+                    await Task.FromResult(dbCommandVerify.ExecuteNonQuery());
+                }
 
                 dbCommandVerify.Dispose();
 
-                ConnectionManager.CloseInstanceConnection();
+                //ConnectionManager.CloseInstanceConnection();
 
                 result._stringMessage = "Account Created!";
                 return result;
@@ -181,7 +189,7 @@ public class AccountConnection : MonoBehaviour
         SHA256 sHA256 = SHA256.Create();
         string selectQuerySaltHash = "SELECT salt, hash FROM UserAccounts WHERE username = @username;";
 
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         ConnectionManager.CreateNamedParamater("@username", username, dbCommand);
@@ -207,7 +215,7 @@ public class AccountConnection : MonoBehaviour
         reader.Dispose();
         dbCommand.Dispose();
 
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
 
         byte[] encodedPasscode = System.Text.Encoding.ASCII.GetBytes(passcode + salt + username);
         byte[] computedHash = sHA256.ComputeHash(encodedPasscode);
@@ -262,7 +270,7 @@ public class AccountConnection : MonoBehaviour
     {
         BoolStringResult result;
 
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         ConnectionManager.CreateNamedParamater("@username", username, dbCommand);
@@ -278,7 +286,7 @@ public class AccountConnection : MonoBehaviour
             reader.Dispose();
             dbCommand.Dispose();
 
-            ConnectionManager.CloseInstanceConnection();
+            //ConnectionManager.CloseInstanceConnection();
 
             //if there's anything to read, we have a matching username, so...
             result._stringMessage = "Username in use.";
@@ -291,7 +299,7 @@ public class AccountConnection : MonoBehaviour
             reader.Dispose();
             dbCommand.Dispose();
 
-            ConnectionManager.CloseInstanceConnection();
+            //ConnectionManager.CloseInstanceConnection();
 
             //Otherwise, there are no results, which mean no matches for that username.
             //The provided username is available, so...
@@ -307,7 +315,7 @@ public class AccountConnection : MonoBehaviour
         {
             string selectQueryID = "SELECT ID FROM UserAccounts WHERE username = @username;";
 
-            ConnectionManager.OpenInstanceConnection();
+            //ConnectionManager.OpenInstanceConnection();
 
             IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
             ConnectionManager.CreateNamedParamater("@username", username, dbCommand);
@@ -325,7 +333,7 @@ public class AccountConnection : MonoBehaviour
 
             dbCommand.Dispose();
 
-            ConnectionManager.CloseInstanceConnection();
+            //ConnectionManager.CloseInstanceConnection();
 
             //Create "AuthToken"
             UserSessionManager.CreateUserSessionInstance(tempID, username);

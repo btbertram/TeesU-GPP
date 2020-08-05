@@ -42,13 +42,12 @@ public class ConnectionHandler : MonoBehaviour
         Debug.Log(_passcode);
 
         var result = await _aConnection.VerifyAccountAsync(_username, _passcode);
-        
+        Debug.Log(result._successful);
         _aConnection.GrantAuth(result._successful, _username);
 
         Debug.Log(UserSessionManager.GetUsername());
         Debug.Log(UserSessionManager.GetID());
 
-        MenuHandler mHandler = GameObject.FindObjectOfType<MenuHandler>();
         _mHandler.UpdateConfirmationMessageText(result._stringMessage + " Login", result._successful);
         if (result._successful)
         {

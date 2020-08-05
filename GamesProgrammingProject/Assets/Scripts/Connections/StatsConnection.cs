@@ -24,7 +24,7 @@ public class StatsConnection : MonoBehaviour
 
     public PlayerStatBlock GetUserStatsFromDB()
     {
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
 
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
 
@@ -47,7 +47,7 @@ public class StatsConnection : MonoBehaviour
         reader.Dispose();
         dbCommand.Dispose();
 
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
 
         return statBlock;
     }
@@ -57,7 +57,7 @@ public class StatsConnection : MonoBehaviour
 
         PlayerAchievementBlock achievementBlock = new PlayerAchievementBlock();
 
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
 
         string selectQuery = "SELECT achievementID, unlocked FROM PlayerAchievements WHERE playerID = @ID;";
@@ -75,7 +75,7 @@ public class StatsConnection : MonoBehaviour
             //Bool is stored as int in SQLite, convert
             if(unlockedint == 1)
             {
-                isUnlocked = false;
+                isUnlocked = true;
             }
 
             switch (achieveID)
@@ -95,7 +95,7 @@ public class StatsConnection : MonoBehaviour
         reader.Dispose();
         dbCommand.Dispose();
 
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
 
         return achievementBlock;
     }
@@ -103,7 +103,7 @@ public class StatsConnection : MonoBehaviour
     public async Task AsyncUpdatePlayerStatsAll(PlayerStatBlock statBlock)
     {
 
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         string updateQuery = "UPDATE UserStats SET nodesHarvested = @nodesHarvested, distanceTraveled = @distanceTraveled, goldEarned = @goldEarned WHERE userID = @ID;";
 
@@ -117,24 +117,58 @@ public class StatsConnection : MonoBehaviour
         await Task.FromResult(dbCommand.ExecuteNonQuery());
 
         dbCommand.Dispose();
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
+    }
+
+    public async Task AsyncUpdatePlayerStat(EUserStats userStat, PlayerStatBlock statBlock)
+    {
+        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        string updateQuery = "UPDATE UserStats SET " + userStat.ToString() + " = @" + userStat.ToString() + " WHERE userID = @ID;";
+        Debug.Log(updateQuery);
+        ConnectionManager.CreateNamedParamater("@ID", UserSessionManager.GetID(), dbCommand);
+        switch (userStat)
+        {
+            case EUserStats.distanceTraveled:
+                ConnectionManager.CreateNamedParamater("@" + userStat.ToString(), statBlock.totalDistanceTraveled, dbCommand);
+                break;
+            case EUserStats.goldEarned:
+                ConnectionManager.CreateNamedParamater("@" + userStat.ToString(), statBlock.totalGoldCollected, dbCommand);
+                break;
+            case EUserStats.nodesHarvested:
+                ConnectionManager.CreateNamedParamater("@" + userStat.ToString(), statBlock.totalGatheringPointsHarvested, dbCommand);
+                break;
+            default:
+                break;
+        }
+
+
+        dbCommand.CommandText = updateQuery;
+        await Task.FromResult(dbCommand.ExecuteNonQuery());
+        dbCommand.Dispose();
+
     }
 
     public async Task AsyncUpdatePlayerAchievementUnlock(EAchievements achievement, bool unlocked)
     {
-        ConnectionManager.OpenInstanceConnection();
+        //ConnectionManager.OpenInstanceConnection();
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
-
-        string updateQuery = "UPDATE PlayerAchievements SET unlocked = @unlocked WHERE userID = @uID AND achievementID = @aID;";
-        ConnectionManager.CreateNamedParamater("@unlocked", unlocked, dbCommand);
+        Debug.Log("Unlock Attempt");
+        Debug.Log((int)achievement);
+        int dbbool = 0;
+        if (unlocked)
+        {
+            dbbool = 1;
+        }
+        
+        string updateQuery = "UPDATE PlayerAchievements SET unlocked = @unlocked WHERE playerID = @uID AND achievementID = @aID;";
+        ConnectionManager.CreateNamedParamater("@unlocked", dbbool, dbCommand);
         ConnectionManager.CreateNamedParamater("@uID", UserSessionManager.GetID(), dbCommand);
         ConnectionManager.CreateNamedParamater("@aID", (int)achievement, dbCommand);
 
         dbCommand.CommandText = updateQuery;
         await Task.FromResult(dbCommand.ExecuteNonQuery());
-
         dbCommand.Dispose();
-        ConnectionManager.CloseInstanceConnection();
+        //ConnectionManager.CloseInstanceConnection();
     }
 
     // Start is called before the first frame update

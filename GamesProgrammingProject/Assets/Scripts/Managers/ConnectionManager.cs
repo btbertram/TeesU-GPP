@@ -23,6 +23,7 @@ public sealed class ConnectionManager
     private ConnectionManager()
     {
         _dbConnection = new SqliteConnection(_internalConnectionString);
+        
     }
 
     public static ConnectionManager GetCMInstance()
@@ -34,6 +35,7 @@ public sealed class ConnectionManager
                 if(_connectionManagerInstance == null)
                 {
                     _connectionManagerInstance = new ConnectionManager();
+                    OpenInstanceConnection();
                 }
             }
         }
@@ -42,53 +44,6 @@ public sealed class ConnectionManager
     #endregion
 
     #region Utility
-
-    /// <summary>
-    /// Prints text debug logs in Unity to test fetching and displaying information from the SQLite database.
-    /// </summary>
-    /// <param name="dbConnection">The Database connection object for the database in use.</param> 
-    void DebugCode()
-    {
-        OpenInstanceConnection();
-        string selectQuery = "SELECT * FROM TestItem;";
-        IDbCommand dbCommand = _dbConnection.CreateCommand();
-        dbCommand.CommandText = selectQuery;
-        IDataReader reader = dbCommand.ExecuteReader();
-
-        while (reader.Read())
-        {
-            string itemName = reader.GetString(1);
-            int wealthValue = reader.GetInt32(2);
-
-            int id = reader.GetInt32(0);
-
-
-            Debug.Log("Name: " + itemName + ". Value: " + wealthValue + ". ID: " + id + ".");
-        }
-        reader.Close();
-
-        dbCommand.CommandText = "SELECT * FROM UserAccounts;";
-
-        //IDataReader dataReader = dbCommand.ExecuteReader();
-
-        //Note that this line will currently fail without an active data reader
-        while (reader.Read())
-        {
-            string userName = reader.GetString(1);
-            var salt = ByteArrayContentsToString(reader.GetValue(2) as byte[]);
-            var hash = ByteArrayContentsToString(reader.GetValue(3) as byte[]);
-
-            int id = reader.GetInt32(0);
-
-
-            Debug.Log("User: " + userName + ". Salt: " + salt + ". ID: " + id + ". Hash: " + hash + ".");
-        }
-        reader.Close();
-        reader.Dispose();
-        dbCommand.Dispose();
-
-        CloseInstanceConnection();
-    }
 
     /// <summary>
     /// Opens a new connection to the database for the ConnectionManager instance.
@@ -133,35 +88,36 @@ public sealed class ConnectionManager
         dbCommand.Parameters.Add(parameter);
     }
 
-    public static async Task<long> AsyncQueryTimeNow()
-    {
-        return await Task.FromResult(QueryCurrentTime());
-    }
+    //public static async Task<long> AsyncQueryTimeNow()
+    //{
+    //    return await QueryCurrentTime();
+    //}
 
     /// <summary>
     /// Queries the database for the current time.
     /// </summary>
     /// <returns>The current time according to the database, or -1 if no data could be selected.</returns>
-    private static long QueryCurrentTime()
+    public static async Task<long> AsyncQueryTimeNow()
     {
-        OpenInstanceConnection();
+        //OpenInstanceConnection();
         IDbCommand dbCommand = GetConnection().CreateCommand();
         string selectQueryTimeNow = "SELECT strftime('%s','now');";
         dbCommand.CommandText = selectQueryTimeNow;
-        IDataReader reader = dbCommand.ExecuteReader();
+        IDataReader reader = await Task.FromResult(dbCommand.ExecuteReader());
 
         long time = -1;
-        while (reader.Read())
-        {
+        while(reader.Read())
+        {        
             //Raw value returned is as a "Time String". So, we must convert
             string timeString = reader.GetString(0);
-            time = Int64.Parse(timeString);
-        }
+            time = Int64.Parse(timeString);        
+        }      
+        
         reader.Close();
         reader.Dispose();
         dbCommand.Dispose();
 
-        CloseInstanceConnection();
+        //CloseInstanceConnection();
         return time;
     }
 
