@@ -106,10 +106,11 @@ public class GatheringConnection : MonoBehaviour
 
     }
 
-    public async void RecordGatherTime(int gatherPointID)
+
+    public async Task AsyncRecordGatherTime(long currentTime, int gatherPointID)
     {
         //long currentTime = 1;
-        long currentTime = await ConnectionManager.AsyncQueryTimeNow();
+        //long currentTime = await ConnectionManager.AsyncQueryTimeNow();
 
         //ConnectionManager.OpenInstanceConnection();
 
@@ -123,6 +124,7 @@ public class GatheringConnection : MonoBehaviour
         await Task.FromResult(dbCommand.ExecuteNonQuery());
 
         dbCommand.Dispose();
+        //return false;
         //ConnectionManager.CloseInstanceConnection();
     }
 

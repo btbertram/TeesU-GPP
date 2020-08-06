@@ -12,14 +12,13 @@ public class WorldManager : MonoBehaviour
     {
         for(; ; )
         {
-            CheckGatheringPointGrowth();
+            CheckGatheringPointGrowth();            
             yield return new WaitForSeconds(3);
         }
     }
 
     private void CheckGatheringPointGrowth()
     {
-
         foreach (GatheringPoint point in _gatheringPoints)
         {
             point.AsyncCheckIfRegrown();

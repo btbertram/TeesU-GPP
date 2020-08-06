@@ -26,7 +26,10 @@ public class AccountConnection : MonoBehaviour
     {
         //Wait for a fraction of a second, or Unity doesn't have time to fire other events.
         await Task.Delay(50);
+        Debug.Log("!");
         var result = await Task.FromResult<BoolStringResult>(VerifyAccount(username, passcode));
+        Debug.Log("?");
+        await Task.Delay(50);
 
         return result;
     }

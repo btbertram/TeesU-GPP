@@ -38,7 +38,7 @@ public class PlayerStats : MonoBehaviour
         {
             _playerAchievementBlock.totalGathersUnlocked = true;
         }
-        await _statsConnection.AsyncUpdatePlayerStat(EUserStats.nodesHarvested, _playerStatBlock);
+        await Task.Run(() => _statsConnection.AsyncUpdatePlayerStat(EUserStats.nodesHarvested, _playerStatBlock));
         
     }
 
@@ -58,9 +58,9 @@ public class PlayerStats : MonoBehaviour
         {
             _playerAchievementBlock.totalGoldUnlocked = true;
             Debug.Log("Collected 100 gold! " + _playerAchievementBlock.totalGoldUnlocked + " " + _playerStatBlock.totalGoldCollected);
-            await _statsConnection.AsyncUpdatePlayerAchievementUnlock(EAchievements.TotalGold, _playerAchievementBlock.totalGoldUnlocked);
+            await Task.Run(() => _statsConnection.AsyncUpdatePlayerAchievementUnlock(EAchievements.TotalGold, _playerAchievementBlock.totalGoldUnlocked));
         }
-        await _statsConnection.AsyncUpdatePlayerStat(EUserStats.goldEarned, _playerStatBlock);
+        await Task.Run( () => _statsConnection.AsyncUpdatePlayerStat(EUserStats.goldEarned, _playerStatBlock));
     }
 
     #endregion

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -83,21 +84,24 @@ public class GatheringPoint : MonoBehaviour, IInteractable
         TextFaceCamera();
     }
 
-    public void InteractionTriggered()
+    public async Task InteractionTriggered()
     {
 
         switch (_type)
         {
             case (int)EGatherPointType.GoldGatherType:
-                GameObject.FindObjectOfType<PlayerData>().gameObject.SendMessage(EMessagedFunc.UpdatePlayerGold.ToString(), 10);
-                GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGoldTotal.ToString(), 10);
-                GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGatheringPointsTotal.ToString(), 1);
-                //long currentTime = ConnectionManager.AsyncQueryTimeNow().Result;
-                gatheringPointConneciton.RecordGatherTime(_pointID);
                 _isActive = false;
                 ToggleInteractionText();
                 this.gameObject.GetComponent<MeshRenderer>().enabled = _isActive;
                 this.gameObject.GetComponent<BoxCollider>().enabled = _isActive;
+                GameObject.FindObjectOfType<PlayerData>().gameObject.SendMessage(EMessagedFunc.UpdatePlayerGold.ToString(), 10);
+                GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGoldTotal.ToString(), 10);
+                GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGatheringPointsTotal.ToString(), 1);
+                long currentTime = await ConnectionManager.AsyncQueryTimeNow();
+                await Task.Run(() => gatheringPointConneciton.AsyncRecordGatherTime(currentTime, _pointID));
+
+                //Task.Run(() => gatheringPointConneciton.AsyncRecordGatherTime(currentTime, _pointID));
+                //StartCoroutine(Testing(gatheringPointConneciton, _pointID));
 
                 break;
 
