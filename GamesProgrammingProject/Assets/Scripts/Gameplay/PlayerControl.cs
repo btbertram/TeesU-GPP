@@ -6,9 +6,6 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour
 {
     private MenuHandler _mHandler;
-    //Set this in Editor
-    public GameObject pauseMenu;
-    GameObject focusedMenu;
     GameObject focusedInteractable;
     private InteractionCollision _interactCollision;
 
@@ -16,14 +13,20 @@ public class PlayerControl : MonoBehaviour
     {
         if (Input.GetButtonDown(EInput.Cancel.ToString()))
         {
-            if(focusedMenu != null)
+            if(_mHandler.GetFocusedMenu() != null)
             {
-                _mHandler.ToggleCanvas(focusedMenu);
-                ClearMenuFocus();
+                if(_mHandler.GetFocusedSubMenu() != null)
+                {
+                    _mHandler.ToggleCanvas(_mHandler.GetFocusedSubMenu());
+                    _mHandler.ClearSubMenuFocus();
+                }
+                _mHandler.ToggleCanvas(_mHandler.GetFocusedMenu());
+                _mHandler.ClearMenuFocus();
+                _mHandler.RestorePrevCanvas();
             }
             else
             {
-                _mHandler.ToggleCanvas(pauseMenu);
+                _mHandler.ToggleCanvas(_mHandler.GetPauseCanvas());
                 //Also toggle time here, call from GameManager
             }
         }
@@ -43,16 +46,6 @@ public class PlayerControl : MonoBehaviour
             _interactCollision.interacters.Remove(_interactCollision.GetFirstInteractableFromCollisionCollection());
 
         }
-    }
-
-    public void SetMenuFocus(GameObject gameObject)
-    {
-        focusedMenu = gameObject;
-    }
-
-    public void ClearMenuFocus()
-    {
-        focusedMenu = null;
     }
 
     // Start is called before the first frame update

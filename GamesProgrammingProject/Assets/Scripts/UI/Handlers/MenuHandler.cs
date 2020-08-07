@@ -18,6 +18,9 @@ public class MenuHandler : MonoBehaviour
     GameObject messageCanvas;
     GameObject loadingCanvas;
     GameObject mainMenuCanvas;
+    GameObject pauseCanvas;
+    GameObject focusedMenu;
+    GameObject focusedSubMenu;
     Text messageCanvasText;
 
     public GameObject GetMessageCanvas()
@@ -35,9 +38,49 @@ public class MenuHandler : MonoBehaviour
         return mainMenuCanvas;
     }
 
+    public GameObject GetPauseCanvas()
+    {
+        return pauseCanvas;
+    }
+
+    public GameObject GetFocusedMenu()
+    {
+        return focusedMenu;
+    }
+
+    public GameObject GetFocusedSubMenu()
+    {
+        return focusedSubMenu;
+    }
+
     public void ToggleCanvas(GameObject gameObject)
     {
         gameObject.SetActive(!gameObject.activeInHierarchy);
+    }
+
+    public void SetCanvasTrue(GameObject gameObject)
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void SetCanvasFalse(GameObject gameObject)
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void ToggleInteractable(GameObject gameObject)
+    {
+        var button = gameObject.GetComponent<Button>();
+        button.interactable = !button.interactable;
+    }
+
+    public void SetInteractableTrue(GameObject gameObject)
+    {
+        gameObject.GetComponent<Button>().interactable = true;
+    }
+    public void SetInteractableFalse(GameObject gameObject)
+    {
+        gameObject.GetComponent<Button>().interactable = false;
     }
 
     public void SetPrevCanvas(GameObject gameObject)
@@ -87,6 +130,25 @@ public class MenuHandler : MonoBehaviour
         //so I'll skip that for now.
         SceneManager.LoadScene(1);
     }
+    public void SetMenuFocus(GameObject gameObject)
+    {
+        focusedMenu = gameObject;
+    }
+
+    public void ClearMenuFocus()
+    {
+        focusedMenu = null;
+    }
+
+    public void SetSubMenuFocus(GameObject gameObject)
+    {
+        focusedSubMenu = gameObject;
+    }
+
+    public void ClearSubMenuFocus()
+    {
+        focusedSubMenu = null;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -122,6 +184,10 @@ public class MenuHandler : MonoBehaviour
                     break;
                 case "Main Menu Canvas":
                     mainMenuCanvas = canvas.gameObject;
+                    canvas.gameObject.SetActive(false);
+                    break;
+                case "Pause Canvas":
+                    pauseCanvas = canvas.gameObject;
                     canvas.gameObject.SetActive(false);
                     break;
                 default:

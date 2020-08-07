@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -27,18 +28,25 @@ public class PlayerStats : MonoBehaviour
         return _playerStatBlock.totalGoldCollected;
     }
 
+    public PlayerStatBlock GetPlayerStatBlock()
+    {
+        return _playerStatBlock;
+    }
+
     #endregion
 
     #region Stat Updaters
 
-    public async Task UpdateGatheringPointsTotal(int amount)
+    public void UpdateGatheringPointsTotal(int amount)
     {
         _playerStatBlock.totalGatheringPointsHarvested += amount;
         if(_achieveLogic.CheckUnlockStatus(EAchievements.TotalGathers))
         {
             _playerAchievementBlock.totalGathersUnlocked = true;
+            Task.Run(() => _statsConnection.AsyncUpdatePlayerAchievementUnlock(EAchievements.TotalGathers, _playerAchievementBlock.totalGathersUnlocked));
+
         }
-        await Task.Run(() => _statsConnection.AsyncUpdatePlayerStat(EUserStats.nodesHarvested, _playerStatBlock));
+        Task.Run(() => _statsConnection.AsyncUpdatePlayerStat(EUserStats.nodesHarvested, _playerStatBlock));
         
     }
 
@@ -50,7 +58,7 @@ public class PlayerStats : MonoBehaviour
             _playerAchievementBlock.totalDistanceUnlocked = true;
         }
     }
-    public async Task UpdateGoldTotal(int amount)
+    public void UpdateGoldTotal(int amount)
     {
         _playerStatBlock.totalGoldCollected += amount;
         Debug.Log("Total Gold: " + _playerStatBlock.totalGoldCollected);
@@ -58,9 +66,9 @@ public class PlayerStats : MonoBehaviour
         {
             _playerAchievementBlock.totalGoldUnlocked = true;
             Debug.Log("Collected 100 gold! " + _playerAchievementBlock.totalGoldUnlocked + " " + _playerStatBlock.totalGoldCollected);
-            await Task.Run(() => _statsConnection.AsyncUpdatePlayerAchievementUnlock(EAchievements.TotalGold, _playerAchievementBlock.totalGoldUnlocked));
+            Task.Run(() => _statsConnection.AsyncUpdatePlayerAchievementUnlock(EAchievements.TotalGold, _playerAchievementBlock.totalGoldUnlocked));
         }
-        await Task.Run( () => _statsConnection.AsyncUpdatePlayerStat(EUserStats.goldEarned, _playerStatBlock));
+        Task.Run( () => _statsConnection.AsyncUpdatePlayerStat(EUserStats.goldEarned, _playerStatBlock));
     }
 
     #endregion
@@ -80,6 +88,11 @@ public class PlayerStats : MonoBehaviour
     public bool IsTotalGoldUnlocked()
     {
         return _playerAchievementBlock.totalGoldUnlocked;
+    }
+
+    public PlayerAchievementBlock GetPlayerAchievementBlock()
+    {
+        return _playerAchievementBlock;
     }
 
     #endregion
