@@ -5,6 +5,7 @@ using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+//using UnityEngine.UIElements;
 
 /// <summary>
 /// A class used to react to Unity UI events and hide,
@@ -148,6 +149,11 @@ public class MenuHandler : MonoBehaviour
     public void ClearSubMenuFocus()
     {
         focusedSubMenu = null;
+    }
+
+    public void SetLeaderboardCanvasScrollViewContent(GameObject gameObject)
+    {
+        GameObject.Find("Leaderboard Canvas").GetComponentInChildren<ScrollRect>().content = gameObject.GetComponent<RectTransform>();
     }
 
     // Start is called before the first frame update
