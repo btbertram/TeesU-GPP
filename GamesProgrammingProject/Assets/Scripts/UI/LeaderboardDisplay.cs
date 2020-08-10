@@ -13,10 +13,10 @@ public class LeaderboardDisplay : MonoBehaviour
     public float leaderboardDisplayBoxSize = 100;
     public EUserStats eStat;
     List<GameObject> LeaderRowBoxes = new List<GameObject>();
-    List<int> goldStats = new List<int>();
-    List<float> distanceStats = new List<float>();
-    List<int> gatherStats = new List<int>();
     List<string> usernames = new List<string>();
+    IList statList;
+
+    public DisplayStatsConnection DisplayStatsConnection;
 
     GameObject LoadAddLeaderRowToContent()
     {
@@ -26,59 +26,12 @@ public class LeaderboardDisplay : MonoBehaviour
         return newLeaderBox;
     }
 
-    void QueryRankingStat(EUserStats userStat)
+    void UtilityClearStatLists()
     {
-        UtilityClearStatLists(userStat);
-        ConnectionManager.GetCMInstance();
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
-        //Variables don't seem to work with the formating for this query.
-        string selectQuery = "SELECT UserStats."+ userStat.ToString() + ", UserAccounts.username FROM UserStats INNER JOIN UserAccounts ON UserStats.UserID = UserAccounts.ID ORDER BY "+userStat.ToString()+" desc;";
-        dbCommand.CommandText = selectQuery;
-        Debug.Log(selectQuery);
-        IDataReader reader = dbCommand.ExecuteReader();
-        while (reader.Read())
-        {
-            switch (userStat)
-            {
-                case EUserStats.distanceTraveled:
-                    distanceStats.Add(reader.GetFloat(0));
-                    break;
-                case EUserStats.goldEarned:
-                    goldStats.Add(reader.GetInt32(0));
-                    break;
-                case EUserStats.nodesHarvested:
-                    gatherStats.Add(reader.GetInt32(0));
-                    break;
-                default:
-                    break;
-            }
-            usernames.Add(reader.GetString(1));
-        }
-        reader.Close();
-        reader.Dispose();
-        dbCommand.Dispose();
-    }
 
-    void UtilityClearStatLists(EUserStats userStat)
-    {
-        switch (userStat)
-        {
-            case EUserStats.distanceTraveled:
-                distanceStats.Clear();
-                break;
-            case EUserStats.goldEarned:
-                goldStats.Clear();
-                break;
-            case EUserStats.nodesHarvested:
-                gatherStats.Clear();
-                break;
-            default:
-                break;
-        }
+        statList.Clear();
         usernames.Clear();
     }
-
-
 
     void AssignLeaderDisplayBoxTexts(EUserStats userStat)
     {
@@ -97,7 +50,7 @@ public class LeaderboardDisplay : MonoBehaviour
                         currentText.text = usernames[rankLoopCounter];
                         break;
                     case nameof(ELeaderboardBoxTexts.LeaderboardStatValueLabel):
-                        AssignValueLabelOnStatSwitch(userStat, currentText, rankLoopCounter);
+                        currentText.text = statList[rankLoopCounter].ToString();
                         break;
                     default:
                         break;
@@ -108,34 +61,33 @@ public class LeaderboardDisplay : MonoBehaviour
         }
     }
 
-    void AssignValueLabelOnStatSwitch(EUserStats userStat, Text text, int index)
-    {
-        switch (userStat)
-        {
-            case EUserStats.distanceTraveled:
-                text.text = distanceStats[index].ToString();
-                break;
-            case EUserStats.goldEarned:
-                text.text = goldStats[index].ToString();
-                break;
-            case EUserStats.nodesHarvested:
-                text.text = gatherStats[index].ToString();
-                break;
-            default:
-                break;
-
-        }
-    }
-
     void Awake()
     {
         rectTransform = this.gameObject.GetComponent<RectTransform>();
+        DisplayStatsConnection = FindObjectOfType<DisplayStatsConnection>();
+
         LeaderBoardContentSetup();
     }
 
     void LeaderBoardContentSetup()
     {
-        QueryRankingStat(eStat);
+        switch (eStat)
+        {
+            case EUserStats.distanceTraveled:
+                statList = new List<float>();
+                break;
+            case EUserStats.goldEarned:
+                statList = new List<int>();
+                break;
+            case EUserStats.nodesHarvested:
+                statList = new List<int>();
+                break;
+            default:
+                break;
+        }
+
+        UtilityClearStatLists();
+        DisplayStatsConnection.QueryRankingStat(eStat, usernames, statList);
         foreach (string entry in usernames)
         {
             LeaderRowBoxes.Add(LoadAddLeaderRowToContent());

@@ -11,49 +11,34 @@ public class AchievementDisplay : MonoBehaviour
     public float achievementDisplayBoxSize = 200;
     List<GameObject> AchievementBoxes = new List<GameObject>();
     public bool isPlayerAchieve = true;
+    public DisplayStatsConnection DisplayStatsConnection;
 
-    GameObject LoadAddAchievementToContent(GameObject AchievementDisplayBox, EAchievements eAchievements)
+    GameObject LoadAddAchievementToContent(GameObject AchievementDisplayBox, EAchievements achivements)
     {
         rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rectTransform.rect.height + achievementDisplayBoxSize);
         var newAchieveBox = GameObject.Instantiate(AchievementDisplayBox, this.transform);
         ConnectionManager.GetCMInstance();
+
+        (string, string) achievementInfo = DisplayStatsConnection.GetAchievementInfoFromDB(achivements);
         
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
-        string achieveName = "";
-        string achieveDesc = "";
-        string selectQuery = "SELECT name, description FROM Achievements WHERE achievementID = @aID;";
-        ConnectionManager.CreateNamedParamater("@aID", (int)eAchievements, dbCommand);
-        dbCommand.CommandText = selectQuery;
-        IDataReader reader = dbCommand.ExecuteReader();
-
-        while (reader.Read())
-        {
-            achieveName = reader.GetString(0);
-            achieveDesc = reader.GetString(1);
-        }
-
-        reader.Close();
-        reader.Dispose();
-        dbCommand.Dispose();
-
         var textarray = newAchieveBox.GetComponentsInChildren<Text>();
 
-        foreach(Text text in textarray)
+        foreach (Text text in textarray)
         {
             switch (text.name)
-            {                
+            {
                 case nameof(EAchievementBoxTexts.AchievementNameLabel):
-                    text.text = achieveName;
+                    text.text = achievementInfo.Item1;
                     break;
                 case nameof(EAchievementBoxTexts.AchievementDescriptionLabel):
-                    text.text = achieveDesc;
+                    text.text = achievementInfo.Item2;
                     break;
                 default:
                     break;
             }
         }
-        return newAchieveBox;
 
+        return newAchieveBox;
     }
 
     public void UpdateUIAchievementStatus()
@@ -84,40 +69,9 @@ public class AchievementDisplay : MonoBehaviour
 
     void SetPercentPlayersUnlocked(EAchievements achievement)
     {
-        float totalPlayers = -1;
-        float unlockedPlayers = -1;
+        (float, float) playerUnlockInfo = DisplayStatsConnection.GetPlayerUnlockInfoFromDB(achievement);
 
-
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
-        //Get total # of players with achievement logs
-        string selectQuery = "SELECT count(DISTINCT(playerID)) FROM PlayerAchievements;";
-        dbCommand.CommandText = selectQuery;
-        
-        IDataReader reader = dbCommand.ExecuteReader();
-        while (reader.Read())
-        {
-            totalPlayers = reader.GetInt64(0);
-        }
-        reader.Close();
-        reader.Dispose();
-
-
-        //Get total # of players with this achievement unlocked
-        selectQuery = "SELECT count(playerID) FROM PlayerAchievements WHERE achievementID = @aID AND unlocked = 1;";
-        ConnectionManager.CreateNamedParamater("@aID", (int)achievement, dbCommand);
-        
-        dbCommand.CommandText = selectQuery;
-
-        IDataReader reader2 = dbCommand.ExecuteReader();
-        while (reader2.Read())
-        {
-            unlockedPlayers = reader2.GetInt64(0);
-        }
-        reader2.Close();
-        reader2.Dispose();
-        dbCommand.Dispose();
-
-        float percentUnlocked = unlockedPlayers / totalPlayers;
+        float percentUnlocked = playerUnlockInfo.Item1 / playerUnlockInfo.Item2;
         AchievementBoxes[(int)achievement].GetComponentInChildren<Slider>().value = percentUnlocked;
         var texts = AchievementBoxes[(int)achievement].GetComponentsInChildren<Text>();
 
@@ -183,7 +137,7 @@ public class AchievementDisplay : MonoBehaviour
     void Awake()
     {
         rectTransform = this.gameObject.GetComponent<RectTransform>();
-
+        DisplayStatsConnection = FindObjectOfType<DisplayStatsConnection>();
         for(int x = 0; x < (int)EAchievements.Error; x++)
         {
             GameObject box = LoadAddAchievementToContent(AchievementDisplayBoxPrefab, (EAchievements)x);
