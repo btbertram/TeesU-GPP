@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEditor;
@@ -32,11 +33,34 @@ public class ConnectionHandler : MonoBehaviour
     {
         _mHandler = GameObject.FindObjectOfType<MenuHandler>();
         _aConnection = GameObject.FindObjectOfType<AccountConnection>();
-        InputField nameInputField = GameObject.Find("Username InputField").GetComponent<InputField>();
-        InputField codeInputField = GameObject.Find("Password InputField").GetComponent<InputField>();
+        InputField codeInputField = null;
+        InputField nameInputField = null;
 
-        _username = nameInputField.text;
-        _passcode = codeInputField.text;
+        var test = GameObject.FindObjectsOfType<InputField>();
+        foreach(InputField x in test)
+        {
+            switch (x.name)
+            {
+                case nameof(EInputFieldNames.UsernameInputField):
+                    nameInputField = x;
+                    break;
+
+                case nameof(EInputFieldNames.PasswordInputField):
+                    codeInputField = x;
+                    break;
+
+            }
+        }
+
+        try
+        {
+            _username = nameInputField.text;
+            _passcode = codeInputField.text;
+        }
+        catch (NullReferenceException)
+        {
+            throw new NullReferenceException("ClickVerify: Use of unassigned InputField.");
+        }
 
         Debug.Log(_username);
         Debug.Log(_passcode);
@@ -63,11 +87,35 @@ public class ConnectionHandler : MonoBehaviour
     {
         _mHandler = GameObject.FindObjectOfType<MenuHandler>();
         _aConnection = GameObject.FindObjectOfType<AccountConnection>();
-        InputField nameInputField = GameObject.Find("New Username InputField").GetComponent<InputField>();
-        InputField codeInputField = GameObject.Find("New Password InputField").GetComponent<InputField>();
 
-        _username = nameInputField.text;
-        _passcode = codeInputField.text;
+        InputField codeInputField = null;
+        InputField nameInputField = null;
+
+        var test = GameObject.FindObjectsOfType<InputField>();
+        foreach (InputField x in test)
+        {
+            switch (x.name)
+            {
+                case nameof(EInputFieldNames.NewUsernameInputField):
+                    nameInputField = x;
+                    break;
+
+                case nameof(EInputFieldNames.NewPasswordInputField):
+                    codeInputField = x;
+                    break;
+
+            }
+        }
+
+        try
+        {
+            _username = nameInputField.text;
+            _passcode = codeInputField.text;
+        }
+        catch (NullReferenceException)
+        {
+            throw new NullReferenceException("ClickRegister: Use of unassigned InputField.");
+        }
 
         Debug.Log(_username);
         Debug.Log(_passcode);

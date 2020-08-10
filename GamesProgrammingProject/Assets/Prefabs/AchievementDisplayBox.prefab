@@ -354,7 +354,7 @@ GameObject:
   - component: {fileID: 5202039750601770928}
   - component: {fileID: 2595016608082996983}
   m_Layer: 5
-  m_Name: AchievementDiscriptionLabel
+  m_Name: AchievementDescriptionLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -421,7 +421,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: (Placeholder Achieve Description this will describe how to unlock the achievement
-    or give flavor text etc.
+    or give flavor text etc.)
 --- !u!1 &7289538217854277233
 GameObject:
   m_ObjectHideFlags: 0

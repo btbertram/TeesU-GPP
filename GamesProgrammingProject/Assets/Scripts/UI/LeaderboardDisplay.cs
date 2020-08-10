@@ -90,13 +90,13 @@ public class LeaderboardDisplay : MonoBehaviour
             {
                 switch (currentText.name)
                 {
-                    case "RankingLabel":
+                    case nameof(ELeaderboardBoxTexts.LeaderboardRankingLabel):
                         currentText.text = (rankLoopCounter+1).ToString();
                         break;
-                    case "PlayerNameLabel":
+                    case nameof(ELeaderboardBoxTexts.LeaderboardPlayerNameLabel):
                         currentText.text = usernames[rankLoopCounter];
                         break;
-                    case "ValueLabel":
+                    case nameof(ELeaderboardBoxTexts.LeaderboardStatValueLabel):
                         AssignValueLabelOnStatSwitch(userStat, currentText, rankLoopCounter);
                         break;
                     default:

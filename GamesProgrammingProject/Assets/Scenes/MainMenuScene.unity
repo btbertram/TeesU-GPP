@@ -461,7 +461,7 @@ GameObject:
   - component: {fileID: 134972320}
   - component: {fileID: 134972319}
   m_Layer: 5
-  m_Name: Registration Canvas
+  m_Name: RegistrationCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -565,7 +565,7 @@ GameObject:
   - component: {fileID: 168118899}
   - component: {fileID: 168118898}
   m_Layer: 5
-  m_Name: Password InputField
+  m_Name: PasswordInputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -816,7 +816,7 @@ GameObject:
   - component: {fileID: 214486327}
   - component: {fileID: 214486326}
   m_Layer: 5
-  m_Name: Login Label Text
+  m_Name: LoginLabelText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1078,7 +1078,7 @@ GameObject:
   - component: {fileID: 437729317}
   - component: {fileID: 437729316}
   m_Layer: 5
-  m_Name: Quit Confirm Label
+  m_Name: QuitConfirmLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1157,7 +1157,7 @@ GameObject:
   - component: {fileID: 465192519}
   - component: {fileID: 465192518}
   m_Layer: 5
-  m_Name: New Password Label
+  m_Name: NewPasswordLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1237,7 +1237,7 @@ GameObject:
   - component: {fileID: 514585518}
   - component: {fileID: 514585517}
   m_Layer: 5
-  m_Name: Backgroun Panel MainMen
+  m_Name: BackgroundPanelMainMen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1399,7 +1399,7 @@ GameObject:
   - component: {fileID: 545542109}
   - component: {fileID: 545542108}
   m_Layer: 5
-  m_Name: Registration Label
+  m_Name: RegistrationLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1478,7 +1478,7 @@ GameObject:
   - component: {fileID: 574093301}
   - component: {fileID: 574093300}
   m_Layer: 5
-  m_Name: Main Title Label Text
+  m_Name: MainTitleLabelText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1558,7 +1558,7 @@ GameObject:
   - component: {fileID: 588127183}
   - component: {fileID: 588127182}
   m_Layer: 5
-  m_Name: Register Submit Button
+  m_Name: RegisterSubmitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2003,7 +2003,7 @@ GameObject:
   - component: {fileID: 654435722}
   - component: {fileID: 654435721}
   m_Layer: 5
-  m_Name: Quit Button
+  m_Name: QuitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2156,7 +2156,7 @@ GameObject:
   - component: {fileID: 668865638}
   - component: {fileID: 668865637}
   m_Layer: 5
-  m_Name: Title Login Label Text
+  m_Name: TitleLoginLabelText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2236,7 +2236,7 @@ GameObject:
   - component: {fileID: 689160723}
   - component: {fileID: 689160722}
   m_Layer: 5
-  m_Name: New Username InputField
+  m_Name: NewUsernameInputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2403,7 +2403,7 @@ GameObject:
   - component: {fileID: 692870086}
   - component: {fileID: 692870085}
   m_Layer: 5
-  m_Name: Login Canvas
+  m_Name: LoginCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2521,7 +2521,7 @@ GameObject:
   - component: {fileID: 712813797}
   - component: {fileID: 712813796}
   m_Layer: 5
-  m_Name: Quit Canvas
+  m_Name: QuitCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2706,7 +2706,7 @@ GameObject:
   - component: {fileID: 747450892}
   - component: {fileID: 747450891}
   m_Layer: 5
-  m_Name: Username InputField
+  m_Name: UsernameInputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2872,7 +2872,7 @@ GameObject:
   - component: {fileID: 776061319}
   - component: {fileID: 776061318}
   m_Layer: 5
-  m_Name: Start Game Button
+  m_Name: StartGameButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3003,7 +3003,7 @@ GameObject:
   - component: {fileID: 820099060}
   - component: {fileID: 820099059}
   m_Layer: 5
-  m_Name: Password Label
+  m_Name: PasswordLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3084,7 +3084,7 @@ GameObject:
   - component: {fileID: 873023540}
   - component: {fileID: 873023539}
   m_Layer: 5
-  m_Name: Options Button
+  m_Name: OptionsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3204,7 +3204,7 @@ GameObject:
   - component: {fileID: 885844798}
   - component: {fileID: 885844797}
   m_Layer: 5
-  m_Name: Username Label
+  m_Name: UsernameLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3363,7 +3363,7 @@ GameObject:
   - component: {fileID: 896180983}
   - component: {fileID: 896180982}
   m_Layer: 5
-  m_Name: Background Panel Message
+  m_Name: BackgroundPanelMessage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3439,7 +3439,7 @@ GameObject:
   - component: {fileID: 926686052}
   - component: {fileID: 926686051}
   m_Layer: 5
-  m_Name: Background Panel Load
+  m_Name: BackgroundPanelLoad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3973,7 +3973,7 @@ GameObject:
   - component: {fileID: 1064527821}
   - component: {fileID: 1064527820}
   m_Layer: 5
-  m_Name: Cancel Button
+  m_Name: CancelButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4193,7 +4193,7 @@ GameObject:
   - component: {fileID: 1086199919}
   - component: {fileID: 1086199918}
   m_Layer: 5
-  m_Name: Quit Cancel Button
+  m_Name: QuitCancelButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4414,7 +4414,7 @@ GameObject:
   - component: {fileID: 1111831398}
   - component: {fileID: 1111831397}
   m_Layer: 5
-  m_Name: Background Panel Quit
+  m_Name: BackgroundPanelQuit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4568,7 +4568,7 @@ GameObject:
   - component: {fileID: 1228280054}
   - component: {fileID: 1228280053}
   m_Layer: 5
-  m_Name: Quit Button
+  m_Name: QuitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4801,7 +4801,7 @@ GameObject:
   - component: {fileID: 1254211537}
   - component: {fileID: 1254211536}
   m_Layer: 5
-  m_Name: Loading Canvas
+  m_Name: LoadingCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4902,7 +4902,7 @@ GameObject:
   - component: {fileID: 1268786999}
   - component: {fileID: 1268786998}
   m_Layer: 5
-  m_Name: Register Button
+  m_Name: RegisterButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5056,7 +5056,7 @@ GameObject:
   - component: {fileID: 1429000088}
   - component: {fileID: 1429000087}
   m_Layer: 5
-  m_Name: New Password InputField
+  m_Name: NewPasswordInputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5379,7 +5379,7 @@ GameObject:
   - component: {fileID: 1547662446}
   - component: {fileID: 1547662445}
   m_Layer: 5
-  m_Name: Background Panel Reg
+  m_Name: BackgroundPanelReg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5533,7 +5533,7 @@ GameObject:
   - component: {fileID: 1609653271}
   - component: {fileID: 1609653270}
   m_Layer: 5
-  m_Name: Quit Confirm Button
+  m_Name: QuitConfirmButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5665,7 +5665,7 @@ GameObject:
   - component: {fileID: 1633596199}
   - component: {fileID: 1633596198}
   m_Layer: 5
-  m_Name: Main Menu Canvas
+  m_Name: MainMenuCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5925,7 +5925,7 @@ GameObject:
   - component: {fileID: 1865409976}
   - component: {fileID: 1865409975}
   m_Layer: 5
-  m_Name: New Username Label
+  m_Name: NewUsernameLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6005,7 +6005,7 @@ GameObject:
   - component: {fileID: 1912919024}
   - component: {fileID: 1912919023}
   m_Layer: 5
-  m_Name: Background Panel Login
+  m_Name: BackgroundPanelLogin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6159,7 +6159,7 @@ GameObject:
   - component: {fileID: 2043509003}
   - component: {fileID: 2043509002}
   m_Layer: 5
-  m_Name: Login Submit Button
+  m_Name: LoginSubmitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6324,7 +6324,7 @@ GameObject:
   - component: {fileID: 2086571300}
   - component: {fileID: 2086571299}
   m_Layer: 5
-  m_Name: Confirmation Message Canvas
+  m_Name: ConfirmationMessageCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -153,7 +153,7 @@ public class MenuHandler : MonoBehaviour
 
     public void SetLeaderboardCanvasScrollViewContent(GameObject gameObject)
     {
-        GameObject.Find("Leaderboard Canvas").GetComponentInChildren<ScrollRect>().content = gameObject.GetComponent<RectTransform>();
+        GameObject.Find("LeaderboardCanvas").GetComponentInChildren<ScrollRect>().content = gameObject.GetComponent<RectTransform>();
     }
 
     // Start is called before the first frame update
@@ -169,10 +169,10 @@ public class MenuHandler : MonoBehaviour
         {
             switch (canvas.name)
             {
-                case "Login Canvas":
+                case nameof(ECanvasNames.LoginCanvas):
                     canvas.gameObject.SetActive(true);
                     break;
-                case "Confirmation Message Canvas":
+                case nameof(ECanvasNames.ConfirmationMessageCanvas):
                     messageCanvas = canvas.gameObject;                                     
                     Text[] textholder = canvas.gameObject.GetComponentsInChildren<Text>();
                     foreach (Text x in textholder)
@@ -184,15 +184,15 @@ public class MenuHandler : MonoBehaviour
                     }
                     canvas.gameObject.SetActive(false);
                     break;
-                case "Loading Canvas":
+                case nameof(ECanvasNames.LoadingCanvas):
                     loadingCanvas = canvas.gameObject;
                     canvas.gameObject.SetActive(false);
                     break;
-                case "Main Menu Canvas":
+                case nameof(ECanvasNames.MainMenuCanvas):
                     mainMenuCanvas = canvas.gameObject;
                     canvas.gameObject.SetActive(false);
                     break;
-                case "Pause Canvas":
+                case nameof(ECanvasNames.PauseCanvas):
                     pauseCanvas = canvas.gameObject;
                     canvas.gameObject.SetActive(false);
                     break;

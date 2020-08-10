@@ -42,10 +42,10 @@ public class AchievementDisplay : MonoBehaviour
         {
             switch (text.name)
             {                
-                case "AchievementNameLabel":
+                case nameof(EAchievementBoxTexts.AchievementNameLabel):
                     text.text = achieveName;
                     break;
-                case "AchievementDiscriptionLabel":
+                case nameof(EAchievementBoxTexts.AchievementDescriptionLabel):
                     text.text = achieveDesc;
                     break;
                 default:
