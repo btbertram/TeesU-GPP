@@ -1675,7 +1675,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Distance Traveled Ranking
+  m_Text: Distance Traveled
 --- !u!222 &506827846
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2609,7 +2609,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Total Gold Ranking
+  m_Text: Total Gold
 --- !u!222 &713561951
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2779,6 +2779,17 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 911410118}
         m_MethodName: SetInteractableFalse
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1705109412}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 911410118}
+        m_MethodName: HeaderStatValueTextChange
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1705109412}
@@ -3729,6 +3740,17 @@ MonoBehaviour:
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1585471080}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 911410118}
+        m_MethodName: HeaderStatValueTextChange
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 963342953}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -4953,7 +4975,7 @@ GameObject:
   - component: {fileID: 1385565539}
   m_Layer: 0
   m_Name: PlayerObject
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5582,6 +5604,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 911410118}
+        m_MethodName: HeaderStatValueTextChange
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1585471080}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1585471083
@@ -5963,6 +5996,17 @@ MonoBehaviour:
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1585471080}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 911410118}
+        m_MethodName: HeaderStatValueTextChange
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1705109412}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -6943,7 +6987,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Total Gathers Ranking
+  m_Text: Total Gathers
 --- !u!222 &2096095347
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7042,6 +7086,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LeaderboardDisplayBoxHeader
+      objectReference: {fileID: 0}
+    - target: {fileID: 4641340789347252664, guid: 4857e3a40316faa4bad04de2eacb8118,
+        type: 3}
+      propertyPath: m_TagString
+      value: HeaderLeaderboard
       objectReference: {fileID: 0}
     - target: {fileID: 7495267914569993153, guid: 4857e3a40316faa4bad04de2eacb8118,
         type: 3}
@@ -7292,6 +7341,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_FontData.m_BestFit
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8767554130792794821, guid: 4857e3a40316faa4bad04de2eacb8118,
+        type: 3}
+      propertyPath: m_FontData.m_MaxSize
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 3690592198179210573, guid: 4857e3a40316faa4bad04de2eacb8118,
         type: 3}

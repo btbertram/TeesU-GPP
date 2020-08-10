@@ -156,6 +156,22 @@ public class MenuHandler : MonoBehaviour
         GameObject.Find("LeaderboardCanvas").GetComponentInChildren<ScrollRect>().content = gameObject.GetComponent<RectTransform>();
     }
 
+    public void HeaderStatValueTextChange(GameObject ButtonText)
+    {
+        var texts = GameObject.FindGameObjectWithTag("HeaderLeaderboard").GetComponentsInChildren<Text>();
+        foreach (Text currentText in texts)
+        {
+            switch (currentText.name)
+            {
+                case nameof(ELeaderboardBoxTexts.LeaderboardStatValueLabel):
+                    currentText.text = ButtonText.GetComponentInChildren<Text>().text;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
