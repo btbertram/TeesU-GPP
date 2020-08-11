@@ -59,29 +59,10 @@ public class MenuHandler : MonoBehaviour
         gameObject.SetActive(!gameObject.activeInHierarchy);
     }
 
-    public void SetCanvasTrue(GameObject gameObject)
-    {
-        gameObject.SetActive(true);
-    }
 
-    public void SetCanvasFalse(GameObject gameObject)
+    public void ToggleButtonInteractable(Button button)
     {
-        gameObject.SetActive(false);
-    }
-
-    public void ToggleInteractable(GameObject gameObject)
-    {
-        var button = gameObject.GetComponent<Button>();
         button.interactable = !button.interactable;
-    }
-
-    public void SetInteractableTrue(GameObject gameObject)
-    {
-        gameObject.GetComponent<Button>().interactable = true;
-    }
-    public void SetInteractableFalse(GameObject gameObject)
-    {
-        gameObject.GetComponent<Button>().interactable = false;
     }
 
     public void SetPrevCanvas(GameObject gameObject)
@@ -151,26 +132,30 @@ public class MenuHandler : MonoBehaviour
         focusedSubMenu = null;
     }
 
-    public void SetLeaderboardCanvasScrollViewContent(GameObject gameObject)
+    /// <summary>
+    /// When clicking upon a button, causes this button and other buttons that this button shares a parent with to toggle
+    /// thier interactablity.
+    /// Reacts to OnClick, set in editor.
+    /// </summary>
+    /// <param name="button">The button being clicked upon.</param>
+    public void ChangeActiveButton(Button button)
     {
-        GameObject.Find("LeaderboardCanvas").GetComponentInChildren<ScrollRect>().content = gameObject.GetComponent<RectTransform>();
-    }
+        var buttons = button.gameObject.transform.parent.GetComponentsInChildren<Button>();
 
-    public void HeaderStatValueTextChange(GameObject ButtonText)
-    {
-        var texts = GameObject.FindGameObjectWithTag("HeaderLeaderboard").GetComponentsInChildren<Text>();
-        foreach (Text currentText in texts)
+        foreach(Button x in buttons)
         {
-            switch (currentText.name)
+            if (!x.interactable)
             {
-                case nameof(ELeaderboardBoxTexts.LeaderboardStatValueLabel):
-                    currentText.text = ButtonText.GetComponentInChildren<Text>().text;
-                    break;
-                default:
-                    break;
+                ToggleButtonInteractable(x);
             }
         }
+        ToggleButtonInteractable(button);
+
     }
+
+    //We want to toggle:
+    //The button that's been clicked
+    //The button that was inactive
 
     // Start is called before the first frame update
     void Start()

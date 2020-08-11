@@ -62,9 +62,6 @@ public class ConnectionHandler : MonoBehaviour
             throw new NullReferenceException("ClickVerify: Use of unassigned InputField.");
         }
 
-        Debug.Log(_username);
-        Debug.Log(_passcode);
-
         var result = await _aConnection.VerifyAccountAsync(_username, _passcode);
         Debug.Log(result._successful);
         _aConnection.GrantAuth(result._successful, _username);
@@ -116,9 +113,6 @@ public class ConnectionHandler : MonoBehaviour
         {
             throw new NullReferenceException("ClickRegister: Use of unassigned InputField.");
         }
-
-        Debug.Log(_username);
-        Debug.Log(_passcode);
 
         var result = await _aConnection.CreateAccountAsync(_username, _passcode);
 

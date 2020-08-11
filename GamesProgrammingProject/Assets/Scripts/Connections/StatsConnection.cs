@@ -124,7 +124,6 @@ public class StatsConnection : MonoBehaviour
     {
         IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         string updateQuery = "UPDATE UserStats SET " + userStat.ToString() + " = @" + userStat.ToString() + " WHERE userID = @ID;";
-        Debug.Log(updateQuery);
         ConnectionManager.CreateNamedParamater("@ID", UserSessionManager.GetID(), dbCommand);
         switch (userStat)
         {

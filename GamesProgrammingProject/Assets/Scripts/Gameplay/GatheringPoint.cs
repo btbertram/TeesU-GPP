@@ -37,15 +37,11 @@ public class GatheringPoint : MonoBehaviour, IInteractable
     {
         if (!_isActive)
         {
-            Debug.Log("Growin'!?" + this.gameObject.name);
             long currenttime = await ConnectionManager.AsyncQueryTimeNow();
             long lastGatheredTime = await gatheringPointConneciton.AsyncQueryGatherTime(_pointID);
 
-            //Debug.Log("Currentime: " + currenttime + " LastTime: " + lastGatheredTime);
-
             if(currenttime - lastGatheredTime >= _respawnTimer)
             {
-                Debug.Log("Sproutin'!");
                 _isActive = true;
                 this.gameObject.GetComponent<MeshRenderer>().enabled = _isActive;
                 this.gameObject.GetComponent<BoxCollider>().enabled = _isActive;

@@ -124,7 +124,6 @@ public class AchievementDisplay : MonoBehaviour
 
     public void SetBoxUnlocked(bool unlocked, EAchievements achievement)
     {
-        Debug.Log("ToggleUnlockUI");
         if (unlocked)
         {
             AchievementBoxes[(int)achievement].GetComponent<Image>().color = Color.green;

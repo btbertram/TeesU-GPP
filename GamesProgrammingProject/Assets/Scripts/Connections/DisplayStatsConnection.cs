@@ -75,7 +75,6 @@ public class DisplayStatsConnection : MonoBehaviour
         //Variables don't seem to work with the formating for this query.
         string selectQuery = "SELECT UserStats." + userStat.ToString() + ", UserAccounts.username FROM UserStats INNER JOIN UserAccounts ON UserStats.UserID = UserAccounts.ID ORDER BY " + userStat.ToString() + " desc;";
         dbCommand.CommandText = selectQuery;
-        Debug.Log(selectQuery);
         IDataReader reader = dbCommand.ExecuteReader();
         while (reader.Read())
         {

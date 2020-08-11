@@ -8,5 +8,7 @@ public enum ECanvasNames
     ConfirmationMessageCanvas,
     LoadingCanvas,
     MainMenuCanvas,
-    PauseCanvas
+    PauseCanvas,
+    LeaderboardCanvas,
+    AchievementCanvas
 }

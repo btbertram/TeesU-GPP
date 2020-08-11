@@ -40,7 +40,6 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown(EInput.Jump.ToString()) && _charController.isGrounded)
         {
             _playerVelocity.y += jumpStrength * 2 * -gravityValue;
-            Debug.Log("Boing");
         }
             
         if ( Input.GetButton(EInput.Vertical.ToString()) || Input.GetButton(EInput.Horizontal.ToString()))

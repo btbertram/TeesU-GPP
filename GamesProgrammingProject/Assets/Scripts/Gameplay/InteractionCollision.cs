@@ -23,13 +23,7 @@ public class InteractionCollision : MonoBehaviour
 
             }
 
-        }
-        else
-        {
-            Debug.Log("Should not be hitting" + other);
-        }
-
-        
+        }        
     }
 
     private void OnTriggerExit(Collider other)
@@ -49,10 +43,7 @@ public class InteractionCollision : MonoBehaviour
                 canInteract = false;
             }
         }
-        else
-        {
-            Debug.Log("Could not remove Collider, collection empty.");
-        }
+
     }
 
     public bool CanInteract()

@@ -20,8 +20,6 @@ public class GatheringConnection : MonoBehaviour
 
     private void LoadGatheringPoints()
     {
-
-        Debug.Log("Loading Points...");
         string selectGatheringPoints = "SELECT * FROM GatheringPoints;";
 
         //ConnectionManager.OpenInstanceConnection();
@@ -72,7 +70,6 @@ public class GatheringConnection : MonoBehaviour
         reader.Dispose();
         dbCommand.Dispose();
         //ConnectionManager.CloseInstanceConnection();
-        Debug.Log("Points Loaded");
     }
 
     public async Task<long> AsyncQueryGatherTime(int gatherPointID)

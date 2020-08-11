@@ -26,9 +26,7 @@ public class AccountConnection : MonoBehaviour
     {
         //Wait for a fraction of a second, or Unity doesn't have time to fire other events.
         await Task.Delay(50);
-        Debug.Log("!");
         var result = await Task.FromResult<BoolStringResult>(VerifyAccount(username, passcode));
-        Debug.Log("?");
         await Task.Delay(50);
 
         return result;
@@ -100,7 +98,6 @@ public class AccountConnection : MonoBehaviour
 
         //ConnectionManager.CloseInstanceConnection();
 
-        Debug.Log("Attempted Account creation");
         if (returnVal == 1)
         {
             //Check if newly created account works
@@ -212,7 +209,6 @@ public class AccountConnection : MonoBehaviour
             salt = System.Text.Encoding.ASCII.GetString(salttemp);
             hash = System.Text.Encoding.ASCII.GetString(hashtemp);
 
-            //Debug.Log("TestHold");
         }
         reader.Close();
         reader.Dispose();
