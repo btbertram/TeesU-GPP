@@ -37,9 +37,11 @@ public class GatheringPoint : MonoBehaviour, IInteractable
     {
         if (!_isActive)
         {
-            long currenttime = await ConnectionManager.AsyncQueryTimeNow();
-            long lastGatheredTime = await gatheringPointConneciton.AsyncQueryGatherTime(_pointID);
+            Task<long> queryNowTimeTask = ConnectionManager.AsyncQueryTimeNow();
+            Task<long> queryGatherTimeTask = gatheringPointConneciton.QueryGatherTimeAsync(_pointID);
 
+            long currenttime = await queryNowTimeTask;
+            long lastGatheredTime = await queryGatherTimeTask;
             if(currenttime - lastGatheredTime >= _respawnTimer)
             {
                 _isActive = true;
@@ -61,8 +63,7 @@ public class GatheringPoint : MonoBehaviour, IInteractable
         {
             case EGatherPointType.GoldGatherType:
             {
-                    _respawnTimer = 2;
-                    GameObject.FindObjectOfType<WorldManager>().AddToGatheringPointsList(this);
+                    _respawnTimer = 60;
                 break;
             }
 
@@ -71,6 +72,8 @@ public class GatheringPoint : MonoBehaviour, IInteractable
                 break;
             }
         }
+
+        GameObject.FindObjectOfType<WorldManager>().AddToGatheringPointsList(this);
 
     }
 
@@ -86,6 +89,7 @@ public class GatheringPoint : MonoBehaviour, IInteractable
         switch (_type)
         {
             case (int)EGatherPointType.GoldGatherType:
+                Task<long> queryTimeTask = ConnectionManager.AsyncQueryTimeNow();
                 _isActive = false;
                 ToggleInteractionText();
                 this.gameObject.GetComponent<MeshRenderer>().enabled = _isActive;
@@ -93,11 +97,8 @@ public class GatheringPoint : MonoBehaviour, IInteractable
                 GameObject.FindObjectOfType<PlayerData>().gameObject.SendMessage(EMessagedFunc.UpdatePlayerGold.ToString(), 10);
                 GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGoldTotal.ToString(), 10);
                 GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGatheringPointsTotal.ToString(), 1);
-                long currentTime = await ConnectionManager.AsyncQueryTimeNow();
+                long currentTime = await queryTimeTask;
                 await Task.Run(() => gatheringPointConneciton.AsyncRecordGatherTime(currentTime, _pointID));
-
-                //Task.Run(() => gatheringPointConneciton.AsyncRecordGatherTime(currentTime, _pointID));
-                //StartCoroutine(Testing(gatheringPointConneciton, _pointID));
 
                 break;
 

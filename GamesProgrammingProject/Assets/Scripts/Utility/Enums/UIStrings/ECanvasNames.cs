@@ -5,6 +5,7 @@ using UnityEngine;
 public enum ECanvasNames
 {
     LoginCanvas,
+    RegistrationCanvas,
     ConfirmationMessageCanvas,
     LoadingCanvas,
     MainMenuCanvas,

@@ -62,12 +62,15 @@ public class ConnectionHandler : MonoBehaviour
             throw new NullReferenceException("ClickVerify: Use of unassigned InputField.");
         }
 
-        var result = await _aConnection.VerifyAccountAsync(_username, _passcode);
-        Debug.Log(result._successful);
-        _aConnection.GrantAuth(result._successful, _username);
+        //Now that we have the input field info, we can toggle off the login canvas
+        _mHandler.ToggleCanvas(_mHandler.GetLoginCanvas());
 
-        Debug.Log(UserSessionManager.GetUsername());
-        Debug.Log(UserSessionManager.GetID());
+        Task<BoolStringResult> verifyAccountTask = _aConnection.VerifyAccountAsync(_username, _passcode);
+        var result = await verifyAccountTask;
+
+        Debug.Log(result._successful);
+        Task authTask = _aConnection.GrantAuthAsync(result._successful, _username);
+
 
         _mHandler.UpdateConfirmationMessageText(result._stringMessage + " Login", result._successful);
         if (result._successful)
@@ -77,6 +80,11 @@ public class ConnectionHandler : MonoBehaviour
         _mHandler.ToggleCanvas(_mHandler.GetLoadingCanvas());
         _mHandler.ToggleCanvas(_mHandler.GetMessageCanvas());
 
+        if (authTask.IsCompleted)
+        {
+            Debug.Log(UserSessionManager.GetUsername());
+            Debug.Log(UserSessionManager.GetID());
+        }
 
     }
 
@@ -114,9 +122,19 @@ public class ConnectionHandler : MonoBehaviour
             throw new NullReferenceException("ClickRegister: Use of unassigned InputField.");
         }
 
-        var result = await _aConnection.CreateAccountAsync(_username, _passcode);
+        //Now that we have the input field info, we can toggle off the reg canvas
+        _mHandler.ToggleCanvas(_mHandler.GetRegistrationCanvas());
+
+        Task<BoolStringResult> createAccountTask = _aConnection.CreateAccountAsync(_username, _passcode);
+        var result = await createAccountTask;
 
         _mHandler.UpdateConfirmationMessageText(result._stringMessage + " Registration", result._successful);
+
+        if (result._successful)
+        {
+            _mHandler.SetPrevCanvas(_mHandler.GetLoginCanvas());
+        }
+
         _mHandler.ToggleCanvas(_mHandler.GetLoadingCanvas());
         _mHandler.ToggleCanvas(_mHandler.GetMessageCanvas());
 
@@ -126,7 +144,7 @@ public class ConnectionHandler : MonoBehaviour
     {
         _sConnection = GameObject.FindObjectOfType<SerializationConnection>();
 
-        await _sConnection.AsyncSaveFullPlayerStatus();
+        await _sConnection.SaveFullPlayerStatusAsync();
 
     }
 

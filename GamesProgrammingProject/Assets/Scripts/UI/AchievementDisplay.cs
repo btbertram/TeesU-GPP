@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,16 +14,17 @@ public class AchievementDisplay : MonoBehaviour
     public bool isPlayerAchieve = true;
     public DisplayStatsConnection DisplayStatsConnection;
 
-    GameObject LoadAddAchievementToContent(GameObject AchievementDisplayBox, EAchievements achivements)
+    async Task<GameObject> LoadAddAchievementToContentAsync(GameObject AchievementDisplayBox, EAchievements achivements)
     {
+        ConnectionManager.GetCMInstance();
+        Task<(string, string)> achievementInfoTask = DisplayStatsConnection.GetAchievementInfoFromDBAsync(achivements);
         rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rectTransform.rect.height + achievementDisplayBoxSize);
         var newAchieveBox = GameObject.Instantiate(AchievementDisplayBox, this.transform);
-        ConnectionManager.GetCMInstance();
 
-        (string, string) achievementInfo = DisplayStatsConnection.GetAchievementInfoFromDB(achivements);
         
         var textarray = newAchieveBox.GetComponentsInChildren<Text>();
 
+        (string, string) achievementInfo = await achievementInfoTask;
         foreach (Text text in textarray)
         {
             switch (text.name)
@@ -41,7 +43,7 @@ public class AchievementDisplay : MonoBehaviour
         return newAchieveBox;
     }
 
-    public void UpdateUIAchievementStatus()
+    public async Task UpdateUIAchievementStatus()
     {
         if (isPlayerAchieve)
         {
@@ -60,21 +62,23 @@ public class AchievementDisplay : MonoBehaviour
         }
         else
         {
-            SetPercentPlayersUnlocked(EAchievements.DistanceTraveled);
-            SetPercentPlayersUnlocked(EAchievements.TotalGathers);
-            SetPercentPlayersUnlocked(EAchievements.TotalGold);
+            await SetPercentPlayersUnlockedAsync(EAchievements.DistanceTraveled);
+            await SetPercentPlayersUnlockedAsync(EAchievements.TotalGathers);
+            await SetPercentPlayersUnlockedAsync(EAchievements.TotalGold);
         }
     }
 
 
-    void SetPercentPlayersUnlocked(EAchievements achievement)
+    async Task SetPercentPlayersUnlockedAsync(EAchievements achievement)
     {
-        (float, float) playerUnlockInfo = DisplayStatsConnection.GetPlayerUnlockInfoFromDB(achievement);
-
-        float percentUnlocked = playerUnlockInfo.Item1 / playerUnlockInfo.Item2;
-        AchievementBoxes[(int)achievement].GetComponentInChildren<Slider>().value = percentUnlocked;
+        Task<(float, float)> achievementUnlockInfoTask = DisplayStatsConnection.GetPlayerUnlockInfoFromDBAsync(achievement);
         var texts = AchievementBoxes[(int)achievement].GetComponentsInChildren<Text>();
 
+        await Task.Delay(2000);
+
+        (float, float) playerUnlockInfo = await achievementUnlockInfoTask;
+        float percentUnlocked = playerUnlockInfo.Item1 / playerUnlockInfo.Item2;
+        AchievementBoxes[(int)achievement].GetComponentInChildren<Slider>().value = percentUnlocked;
         foreach (Text x in texts)
         {
             if (x.name == "AchievementProgressLabel")
@@ -91,7 +95,7 @@ public class AchievementDisplay : MonoBehaviour
         switch (achievement)
         {
             case EAchievements.DistanceTraveled:
-                achievementGoal = 50;
+                achievementGoal = 500;
                 break;
             case EAchievements.TotalGathers:
                 achievementGoal = 5;
@@ -133,26 +137,17 @@ public class AchievementDisplay : MonoBehaviour
             AchievementBoxes[(int)achievement].GetComponent<Image>().color = Color.red;
         }
     }
-    void Awake()
+    async void Awake()
     {
         rectTransform = this.gameObject.GetComponent<RectTransform>();
         DisplayStatsConnection = FindObjectOfType<DisplayStatsConnection>();
         for(int x = 0; x < (int)EAchievements.Error; x++)
         {
-            GameObject box = LoadAddAchievementToContent(AchievementDisplayBoxPrefab, (EAchievements)x);
+            Task<GameObject> achievementLoadTask = LoadAddAchievementToContentAsync(AchievementDisplayBoxPrefab, (EAchievements)x);
+            GameObject box = await achievementLoadTask;
             AchievementBoxes.Insert(x, box);
         }
 
     }
 
-    void OnEnable()
-    {
-        UpdateUIAchievementStatus();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

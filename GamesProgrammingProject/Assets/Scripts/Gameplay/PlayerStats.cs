@@ -37,28 +37,31 @@ public class PlayerStats : MonoBehaviour
 
     #region Stat Updaters
 
-    public void UpdateGatheringPointsTotal(int amount)
+    public async Task UpdateGatheringPointsTotal(int amount)
     {
         _playerStatBlock.totalGatheringPointsHarvested += amount;
         if(_achieveLogic.CheckUnlockStatus(EAchievements.TotalGathers))
         {
             _playerAchievementBlock.totalGathersUnlocked = true;
-            Task.Run(() => _statsConnection.AsyncUpdatePlayerAchievementUnlock(EAchievements.TotalGathers, _playerAchievementBlock.totalGathersUnlocked));
+            await Task.Run(() => _statsConnection.UpdatePlayerAchievementUnlockAsync(EAchievements.TotalGathers, _playerAchievementBlock.totalGathersUnlocked));
 
         }
-        Task.Run(() => _statsConnection.AsyncUpdatePlayerStat(EUserStats.nodesHarvested, _playerStatBlock));
+        await Task.Run(() => _statsConnection.UpdatePlayerStatAsync(EUserStats.nodesHarvested, _playerStatBlock));
         
     }
 
-    public void UpdateDistanceTotal(float amount)
+    public async Task UpdateDistanceTotal(float amount)
     {
         _playerStatBlock.totalDistanceTraveled += amount;
         if (_achieveLogic.CheckUnlockStatus(EAchievements.DistanceTraveled))
         {
             _playerAchievementBlock.totalDistanceUnlocked = true;
+            await Task.Run(() => _statsConnection.UpdatePlayerAchievementUnlockAsync(EAchievements.DistanceTraveled, _playerAchievementBlock.totalDistanceUnlocked));
         }
+        await Task.Run(() => _statsConnection.UpdatePlayerStatAsync(EUserStats.distanceTraveled, _playerStatBlock));
     }
-    public void UpdateGoldTotal(int amount)
+
+    public async Task UpdateGoldTotal(int amount)
     {
         _playerStatBlock.totalGoldCollected += amount;
         Debug.Log("Total Gold: " + _playerStatBlock.totalGoldCollected);
@@ -66,9 +69,9 @@ public class PlayerStats : MonoBehaviour
         {
             _playerAchievementBlock.totalGoldUnlocked = true;
             Debug.Log("Collected 100 gold! " + _playerAchievementBlock.totalGoldUnlocked + " " + _playerStatBlock.totalGoldCollected);
-            Task.Run(() => _statsConnection.AsyncUpdatePlayerAchievementUnlock(EAchievements.TotalGold, _playerAchievementBlock.totalGoldUnlocked));
+            await Task.Run(() => _statsConnection.UpdatePlayerAchievementUnlockAsync(EAchievements.TotalGold, _playerAchievementBlock.totalGoldUnlocked));
         }
-        Task.Run( () => _statsConnection.AsyncUpdatePlayerStat(EUserStats.goldEarned, _playerStatBlock));
+        await Task.Run(() => _statsConnection.UpdatePlayerStatAsync(EUserStats.goldEarned, _playerStatBlock));
     }
 
     #endregion
@@ -104,28 +107,23 @@ public class PlayerStats : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
-        _achieveLogic = new AchieveLogic(this);
         _statsConnection = GameObject.FindObjectOfType<StatsConnection>();
-        PlayerStatBlock statBlock = _statsConnection.GetUserStatsFromDB();
+        Task<PlayerStatBlock> statTask = _statsConnection.GetUserStatsFromDBAsync();
+        Task<PlayerAchievementBlock> achievementTask = _statsConnection.GetUserAchievementsFromDBAsync();
 
+        _achieveLogic = new AchieveLogic(this);
+
+        PlayerStatBlock statBlock = await statTask;
         _playerStatBlock.totalGatheringPointsHarvested = statBlock.totalGatheringPointsHarvested;
         _playerStatBlock.totalDistanceTraveled = statBlock.totalDistanceTraveled;
         _playerStatBlock.totalGoldCollected = statBlock.totalGoldCollected;
 
-        PlayerAchievementBlock achievementBlock = _statsConnection.GetUserAchievementsFromDB();
-
+        PlayerAchievementBlock achievementBlock = await achievementTask;
         _playerAchievementBlock.totalGathersUnlocked = achievementBlock.totalGathersUnlocked;
         _playerAchievementBlock.totalDistanceUnlocked = achievementBlock.totalDistanceUnlocked;
         _playerAchievementBlock.totalGoldUnlocked = achievementBlock.totalGoldUnlocked;
-
-        //foreach(bool isUnlocked in _achieveLogic.CheckUnlockStatusAll())
-        //{
-            
-        //}
-
-
     }
 
     // Update is called once per frame

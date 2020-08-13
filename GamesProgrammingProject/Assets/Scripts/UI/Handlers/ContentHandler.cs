@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,15 +42,15 @@ public class ContentHandler : MonoBehaviour
         newContent.transform.parent.transform.parent.GetComponent<ScrollRect>().content = newContent.GetComponent<RectTransform>();
     }
 
-    public void SetActiveContent(GameObject gameObject)
+    public async void ClickSetActiveContent(GameObject gameObject)
     {
         GameObject[] contents = null;
         switch (gameObject.tag)
         {
-            case "LeaderboardContent":
+            case nameof(ETags.LeaderboardContent):
                 contents = _leaderboardContents;
                 break;
-            case "AchievementContent":
+            case nameof(ETags.AchievementContent):
                 contents = _achievementContents;
                 break;
         }
@@ -68,6 +69,19 @@ public class ContentHandler : MonoBehaviour
 
         SetParentScrollRectContentAs(gameObject);
 
+        switch (gameObject.tag)
+        {
+            case nameof(ETags.LeaderboardContent):
+                await gameObject.GetComponent<LeaderboardDisplay>().RefreshBoard();
+                break;
+            case nameof(ETags.AchievementContent):
+                await gameObject.GetComponent<AchievementDisplay>().UpdateUIAchievementStatus();
+                break;
+            default:
+                break;
+        }
+
+
     }
 
     /// <summary>
@@ -82,7 +96,6 @@ public class ContentHandler : MonoBehaviour
             if(x.name == "LeaderboardContentGold")
             {
                 x.SetActive(true);
-                SetParentScrollRectContentAs(x);
             }
             else
             {
@@ -113,7 +126,6 @@ public class ContentHandler : MonoBehaviour
             if (x.name == "PlayerAchievementContent")
             {
                 x.SetActive(true);
-                SetParentScrollRectContentAs(x);
             }
             else
             {
@@ -137,10 +149,16 @@ public class ContentHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        LeaderboardCanvasObject = GameObject.Find(ECanvasNames.LeaderboardCanvas.ToString());
-        AchievementCanvasObject = GameObject.Find(ECanvasNames.AchievementCanvas.ToString());
-        _leaderboardContents = GameObject.FindGameObjectsWithTag("LeaderboardContent");
-        _achievementContents = GameObject.FindGameObjectsWithTag("AchievementContent");
+        LeaderboardCanvasObject = GameObject.FindObjectOfType<MenuHandler>().GetLeaderboardCanvas();
+        AchievementCanvasObject = GameObject.FindObjectOfType<MenuHandler>().GetAchievementCanvas();
+    }
+
+    void Awake()
+    {
+        //These are here to gain references to them BEFORE MenuHandler.cs sets UI elements to active = false,
+        //As you cannot search for inactive objects by tag
+        _leaderboardContents = GameObject.FindGameObjectsWithTag(ETags.LeaderboardContent.ToString());
+        _achievementContents = GameObject.FindGameObjectsWithTag(ETags.AchievementContent.ToString());
     }
 
     // Update is called once per frame

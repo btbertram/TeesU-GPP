@@ -22,6 +22,10 @@ public class AchieveLogic
         {
 
             case EAchievements.DistanceTraveled:
+                if(_playerStats.GetTotalDistanceTraveled() >= 500 && !_playerStats.IsTotalDistanceTraveledUnlocked())
+                {
+                    return true;
+                }
                 return false;
                 //break;
 

@@ -1,14 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using UnityEngine;
 using System.Threading.Tasks;
 using System;
 using System.Drawing;
 
 /// <summary>
-/// A script to automatically populate the database table "GatheringPoints" based on gathering points placed in the editor/designer.
-/// I'd rather spend time automating this than making 50 queries prone to error due to manual entry. This also helps me practice more code anyway.
+/// A designer tool script to automatically populate the database table "GatheringPoints" based on gathering points placed in the editor/designer.
+/// To use, attach this to a gameobject, and press play in editor in the OverworldScene. Any GameObjects with the GatheringPoint.cs script
+/// will be added as a gathering point to the database.
+/// Turn off Gathering Connection and World Manager when running this script, or it'll double the inserts.
 /// </summary>
 public class GPointInsertConnection : MonoBehaviour
 {
@@ -23,18 +25,10 @@ public class GPointInsertConnection : MonoBehaviour
         PopulateGatheringPointDatabaseTable(gatheringPoints);
     }
 
-
-    private async void AsyncClearGatheringPointsDatabaseTable()
-    {
-        Debug.Log("Reached Async Clear");
-        await new Task( () => ClearGatheringPointsDatabaseTable() );
-    }
-
     private void ClearGatheringPointsDatabaseTable()
     {
-        Debug.Log("Reached Clear");
         //ConnectionManager.OpenInstanceConnection();
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         
         string deleteAllRecordsFromGatheringPoints = "DELETE FROM GatheringPoints;";
         dbCommand.CommandText = deleteAllRecordsFromGatheringPoints;
@@ -44,16 +38,11 @@ public class GPointInsertConnection : MonoBehaviour
         //ConnectionManager.CloseInstanceConnection();
     }
 
-    private async void AsyncPopulateGatheringPointDatabaseTable(GatheringPoint[] points)
-    {
-        await new Task(() => PopulateGatheringPointDatabaseTable(points));
-    }
-
     private void PopulateGatheringPointDatabaseTable(GatheringPoint[] points)
     {
         ConnectionManager.GetCMInstance();
         //ConnectionManager.OpenInstanceConnection();
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         string insertGatheringPoint = "INSERT INTO GatheringPoints VALUES(@pointID, @gpType, @posX, @posY, @posZ, @goldVal, @timeHarvested);";
         int idCounter = -1;
         int goldVal = 0;
@@ -91,8 +80,8 @@ public class GPointInsertConnection : MonoBehaviour
 
             dbCommand.ExecuteNonQuery();
 
-            dbCommand.Dispose();
         }
+            dbCommand.Dispose();
 
         //ConnectionManager.CloseInstanceConnection();
 

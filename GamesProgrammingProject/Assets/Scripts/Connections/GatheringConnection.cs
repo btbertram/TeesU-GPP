@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Drawing;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -12,20 +12,15 @@ public class GatheringConnection : MonoBehaviour
 {
     public GameObject GoldGatherPointPrefab;
 
-
-    public async Task AsyncLoadGatheringPoints()
-    {
-        await new Task(() => { LoadGatheringPoints(); });
-    }
-
-    private void LoadGatheringPoints()
+    public void LoadGatheringPointsAsync()
     {
         string selectGatheringPoints = "SELECT * FROM GatheringPoints;";
 
         //ConnectionManager.OpenInstanceConnection();
 
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         dbCommand.CommandText = selectGatheringPoints;
+        Task<DbDataReader> readerTask = dbCommand.ExecuteReaderAsync();
 
         List<GameObject> gatheringPointObjects = new List<GameObject>();
         int pointID;
@@ -34,16 +29,16 @@ public class GatheringConnection : MonoBehaviour
         float posY;
         float posZ;
         int loopcounter = -1;
+        GameObject newgp;
+        GatheringPoint gpscript;
+        Quaternion zeroQuaternion = new Quaternion(0,0,0,0);
         //Create a gameobject with the component, then set things on the component.
 
-        IDataReader reader = dbCommand.ExecuteReader();
+        DbDataReader reader = readerTask.Result;
         while (reader.Read())
         {
             loopcounter += 1;
 
-            GameObject newgp;
-            GatheringPoint gpscript;
-            Quaternion zeroQuaternion = new Quaternion(0,0,0,0);
             pointID = reader.GetInt32(0);
             type = (EGatherPointType)reader.GetInt32(1);
             posX = reader.GetFloat(2);
@@ -59,6 +54,8 @@ public class GatheringConnection : MonoBehaviour
                     newgp.name = "gatheringPoint" + loopcounter;
                     gpscript = newgp.GetComponent<GatheringPoint>();
                     gpscript.LoadPoint(pointID, type);
+                    newgp.gameObject.GetComponent<MeshRenderer>().enabled = false;
+                    newgp.gameObject.GetComponent<BoxCollider>().enabled = false;
                     break;
 
                 default:
@@ -72,24 +69,18 @@ public class GatheringConnection : MonoBehaviour
         //ConnectionManager.CloseInstanceConnection();
     }
 
-    public async Task<long> AsyncQueryGatherTime(int gatherPointID)
-    {
-
-        return await Task.FromResult(QueryGatherTime(gatherPointID));
-
-    }
-
-    private long QueryGatherTime(int gatherPointID)
+    public async Task<long> QueryGatherTimeAsync(int gatherPointID)
     {
         //ConnectionManager.OpenInstanceConnection();
 
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         string selectQueryTimeGathered = "SELECT timeHarvested FROM GatheringPoints WHERE pointID = @ID;";
         ConnectionManager.CreateNamedParamater("@ID", gatherPointID, dbCommand);
         dbCommand.CommandText = selectQueryTimeGathered;
-        IDataReader reader = dbCommand.ExecuteReader();
+        Task<DbDataReader> readerTask = dbCommand.ExecuteReaderAsync();
         long time = -1;
 
+        DbDataReader reader = await readerTask;
         while (reader.Read())
         {
             time = reader.GetInt64(0);
@@ -111,14 +102,14 @@ public class GatheringConnection : MonoBehaviour
 
         //ConnectionManager.OpenInstanceConnection();
 
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         
         string updateQuery = "UPDATE GatheringPoints SET timeHarvested = @currentTime WHERE PointID = @ID;";
         ConnectionManager.CreateNamedParamater("@currentTime", currentTime, dbCommand);
         ConnectionManager.CreateNamedParamater("@ID", gatherPointID, dbCommand);
 
         dbCommand.CommandText = updateQuery;
-        await Task.FromResult(dbCommand.ExecuteNonQuery());
+        await Task.Run(() => dbCommand.ExecuteNonQueryAsync());
 
         dbCommand.Dispose();
         //return false;
@@ -130,14 +121,6 @@ public class GatheringConnection : MonoBehaviour
     void Start()
     {
         ConnectionManager.GetCMInstance();
-        LoadGatheringPoints();
+        LoadGatheringPointsAsync();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
 }

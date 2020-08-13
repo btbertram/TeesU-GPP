@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
+using System.Threading.Tasks;
 using System.Xml;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,7 +22,7 @@ public class LeaderboardDisplay : MonoBehaviour
     GameObject LoadAddLeaderRowToContent()
     {
         rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rectTransform.rect.height + leaderboardDisplayBoxSize);
-        var newLeaderBox = GameObject.Instantiate(leaderboardDisplayBoxPrefab, this.transform);
+        GameObject newLeaderBox = GameObject.Instantiate(leaderboardDisplayBoxPrefab, this.transform);
 
         return newLeaderBox;
     }
@@ -65,11 +66,9 @@ public class LeaderboardDisplay : MonoBehaviour
     {
         rectTransform = this.gameObject.GetComponent<RectTransform>();
         DisplayStatsConnection = FindObjectOfType<DisplayStatsConnection>();
-
-        LeaderBoardContentSetup();
     }
 
-    void LeaderBoardContentSetup()
+    async Task LeaderBoardContentSetup()
     {
         switch (eStat)
         {
@@ -87,7 +86,10 @@ public class LeaderboardDisplay : MonoBehaviour
         }
 
         UtilityClearStatLists();
-        DisplayStatsConnection.QueryRankingStat(eStat, usernames, statList);
+        await Task.Run(() => DisplayStatsConnection.QueryRankingStatAsync(eStat, usernames, statList));
+        
+        //Optimization issue:
+        //Large collection here for these two functions, causes the game to hang/frame drop while instanciating and assigning text.
         foreach (string entry in usernames)
         {
             LeaderRowBoxes.Add(LoadAddLeaderRowToContent());
@@ -95,7 +97,7 @@ public class LeaderboardDisplay : MonoBehaviour
         AssignLeaderDisplayBoxTexts(eStat);
     }
 
-    void RefreshBoard()
+    public async Task RefreshBoard()
     {
         foreach(GameObject box in LeaderRowBoxes)
         {
@@ -105,12 +107,7 @@ public class LeaderboardDisplay : MonoBehaviour
         LeaderRowBoxes.TrimExcess();
         rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
 
-        LeaderBoardContentSetup();
-    }
-
-    void OnEnable()
-    {
-        RefreshBoard();
+        await LeaderBoardContentSetup();
     }
 
     // Update is called once per frame

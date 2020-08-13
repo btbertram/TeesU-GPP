@@ -5,7 +5,6 @@ using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-//using UnityEngine.UIElements;
 
 /// <summary>
 /// A class used to react to Unity UI events and hide,
@@ -15,15 +14,19 @@ public class MenuHandler : MonoBehaviour
 {
 
     GameObject prevCanvas;
-    //These three GameObjects are used by the Connection Handler
     GameObject messageCanvas;
     GameObject loadingCanvas;
+    GameObject loginCanvas;
+    GameObject registrationCanvas;
     GameObject mainMenuCanvas;
     GameObject pauseCanvas;
+    GameObject leaderboardCanvas;
+    GameObject achievementCanvas;
     GameObject focusedMenu;
     GameObject focusedSubMenu;
     Text messageCanvasText;
 
+    #region CANVAS_GETTERS
     public GameObject GetMessageCanvas()
     {
         return messageCanvas;
@@ -54,11 +57,32 @@ public class MenuHandler : MonoBehaviour
         return focusedSubMenu;
     }
 
+    public GameObject GetLoginCanvas()
+    {
+        return loginCanvas;
+    }
+
+    public GameObject GetRegistrationCanvas()
+    {
+        return registrationCanvas;
+    }
+
+    public GameObject GetAchievementCanvas()
+    {
+        return achievementCanvas;
+    }
+
+    public GameObject GetLeaderboardCanvas()
+    {
+        return leaderboardCanvas;
+    }
+
+    #endregion
+
     public void ToggleCanvas(GameObject gameObject)
     {
         gameObject.SetActive(!gameObject.activeInHierarchy);
     }
-
 
     public void ToggleButtonInteractable(Button button)
     {
@@ -133,8 +157,8 @@ public class MenuHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// When clicking upon a button, causes this button and other buttons that this button shares a parent with to toggle
-    /// thier interactablity.
+    /// When clicking upon this active button, causes this button to become inactive, and causes inactive buttons this button
+    /// shares a parent with to become active.
     /// Reacts to OnClick, set in editor.
     /// </summary>
     /// <param name="button">The button being clicked upon.</param>
@@ -153,10 +177,6 @@ public class MenuHandler : MonoBehaviour
 
     }
 
-    //We want to toggle:
-    //The button that's been clicked
-    //The button that was inactive
-
     // Start is called before the first frame update
     void Start()
     {
@@ -165,13 +185,18 @@ public class MenuHandler : MonoBehaviour
         //This implementation should be faster than Find by name
         Canvas[] canvases = GameObject.FindObjectsOfType<Canvas>();
         
-        //Note: Add enum system or look into tags to make this less error prone
         foreach(Canvas canvas in canvases)
         {
+            canvas.gameObject.SetActive(false);
+
             switch (canvas.name)
             {
                 case nameof(ECanvasNames.LoginCanvas):
                     canvas.gameObject.SetActive(true);
+                    loginCanvas = canvas.gameObject;
+                    break;
+                case nameof(ECanvasNames.RegistrationCanvas):
+                    registrationCanvas = canvas.gameObject;
                     break;
                 case nameof(ECanvasNames.ConfirmationMessageCanvas):
                     messageCanvas = canvas.gameObject;                                     
@@ -183,22 +208,23 @@ public class MenuHandler : MonoBehaviour
                             messageCanvasText = x;
                         }
                     }
-                    canvas.gameObject.SetActive(false);
                     break;
                 case nameof(ECanvasNames.LoadingCanvas):
                     loadingCanvas = canvas.gameObject;
-                    canvas.gameObject.SetActive(false);
                     break;
                 case nameof(ECanvasNames.MainMenuCanvas):
                     mainMenuCanvas = canvas.gameObject;
-                    canvas.gameObject.SetActive(false);
                     break;
                 case nameof(ECanvasNames.PauseCanvas):
                     pauseCanvas = canvas.gameObject;
-                    canvas.gameObject.SetActive(false);
+                    break;
+                case nameof(ECanvasNames.AchievementCanvas):
+                    achievementCanvas = canvas.gameObject;
+                    break;
+                case nameof(ECanvasNames.LeaderboardCanvas):
+                    leaderboardCanvas = canvas.gameObject;
                     break;
                 default:
-                    canvas.gameObject.SetActive(false);
                     break;
             }
         }

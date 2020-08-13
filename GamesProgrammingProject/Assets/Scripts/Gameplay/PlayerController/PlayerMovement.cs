@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     Transform _playerInteractCollider;
     CharacterController _charController;
     Vector3 _playerVelocity;
+    Vector3 _prevPos;
     Camera Camera;
     CameraMovement CamMove;
     public GameObject MovementObject;
@@ -26,6 +27,8 @@ public class PlayerMovement : MonoBehaviour
         _playerVelocity = Vector3.zero;
         Camera = GameObject.FindObjectOfType<Camera>();
         CamMove = Camera.GetComponentInParent<CameraMovement>();
+        _prevPos = this.transform.position;
+        StartCoroutine(DistanceTraveledCheck());
     }
 
     // Update is called once per frame
@@ -33,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Gravity();
         Movement();
+
     }
 
     void Movement()
@@ -66,6 +70,22 @@ public class PlayerMovement : MonoBehaviour
        
         _charController.Move(_playerVelocity * Time.deltaTime);
         
+    }
+
+    IEnumerator DistanceTraveledCheck()
+    {
+        for(; ; )
+        {
+            CheckDistanceTraveled();
+            yield return new WaitForSeconds(1);
+        }
+    }
+
+    void CheckDistanceTraveled()
+    {
+        float distance = Vector3.Distance(_prevPos, this.transform.position);
+        GameObject.FindObjectOfType<PlayerStats>().SendMessage(EMessagedFunc.UpdateDistanceTotal.ToString(), distance);
+        _prevPos = this.transform.position;
     }
 
     void Gravity()

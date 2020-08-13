@@ -6,5 +6,6 @@ public enum EMessagedFunc
 {
     UpdatePlayerGold,
     UpdateGoldTotal,
-    UpdateGatheringPointsTotal
+    UpdateGatheringPointsTotal,
+    UpdateDistanceTotal
 }

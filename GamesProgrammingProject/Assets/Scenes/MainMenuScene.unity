@@ -545,7 +545,7 @@ RectTransform:
   - {fileID: 588127181}
   - {fileID: 1064527819}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -718,49 +718,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 168118896}
   m_CullTransparentMesh: 0
---- !u!1 &175640719
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 175640721}
-  - component: {fileID: 175640720}
-  m_Layer: 0
-  m_Name: MenuHandler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &175640720
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 175640719}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c60b3a05231c4244ace080f538fdcb4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &175640721
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 175640719}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 824.3861, y: 400.76358, z: -7730.25}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &184699956
 GameObject:
   m_ObjectHideFlags: 0
@@ -975,8 +932,9 @@ GameObject:
   - component: {fileID: 421358606}
   - component: {fileID: 421358605}
   - component: {fileID: 421358604}
+  - component: {fileID: 421358609}
   m_Layer: 0
-  m_Name: ConnectionHandler
+  m_Name: UIHandler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1066,6 +1024,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &421358609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421358603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c60b3a05231c4244ace080f538fdcb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &437729314
 GameObject:
   m_ObjectHideFlags: 0
@@ -1627,18 +1597,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 421358604}
-        m_MethodName: ClickRegister
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: SetPrevCanvas
         m_Mode: 2
         m_Arguments:
@@ -1649,23 +1608,23 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 134972318}
+          m_ObjectArgument: {fileID: 1254211535}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
-        m_MethodName: ToggleCanvas
-        m_Mode: 2
+      - m_Target: {fileID: 421358604}
+        m_MethodName: ClickRegister
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1254211535}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2072,7 +2031,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: SetPrevCanvas
         m_Mode: 2
         m_Arguments:
@@ -2083,7 +2042,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
@@ -2094,7 +2053,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
@@ -2501,7 +2460,7 @@ RectTransform:
   - {fileID: 1268786997}
   - {fileID: 1228280052}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2603,7 +2562,7 @@ RectTransform:
   - {fileID: 1609653269}
   - {fileID: 1086199917}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2941,7 +2900,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ClickLoadSceneOvrWorld
         m_Mode: 1
         m_Arguments:
@@ -3148,7 +3107,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 873023540}
   m_OnClick:
     m_PersistentCalls:
@@ -3583,7 +3542,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
@@ -3594,7 +3553,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: RestorePrevCanvas
         m_Mode: 1
         m_Arguments:
@@ -4042,8 +4001,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 175640720}
-        m_MethodName: ClearPrevCanvas
+      - m_Target: {fileID: 421358609}
+        m_MethodName: RestorePrevCanvas
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4053,22 +4012,11 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 134972318}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 175640720}
-        m_MethodName: ToggleCanvas
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 692870084}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -4178,7 +4126,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1086199916
 GameObject:
@@ -4262,7 +4210,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
@@ -4273,7 +4221,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: RestorePrevCanvas
         m_Mode: 1
         m_Arguments:
@@ -4637,7 +4585,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: SetPrevCanvas
         m_Mode: 2
         m_Arguments:
@@ -4648,7 +4596,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
@@ -4659,7 +4607,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
@@ -4882,7 +4830,7 @@ RectTransform:
   - {fileID: 539375767}
   - {fileID: 1182431595}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4971,7 +4919,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: SetPrevCanvas
         m_Mode: 2
         m_Arguments:
@@ -4982,7 +4930,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
@@ -4993,7 +4941,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
@@ -5602,7 +5550,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ClickQuit
         m_Mode: 1
         m_Arguments:
@@ -5748,7 +5696,7 @@ RectTransform:
   - {fileID: 873023538}
   - {fileID: 654435720}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -6228,18 +6176,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 421358604}
-        m_MethodName: ClickVerify
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: SetPrevCanvas
         m_Mode: 2
         m_Arguments:
@@ -6250,23 +6187,23 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
+      - m_Target: {fileID: 421358609}
         m_MethodName: ToggleCanvas
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 692870084}
+          m_ObjectArgument: {fileID: 1254211535}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 175640720}
-        m_MethodName: ToggleCanvas
-        m_Mode: 2
+      - m_Target: {fileID: 421358604}
+        m_MethodName: ClickVerify
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1254211535}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -6403,7 +6340,7 @@ RectTransform:
   m_Children:
   - {fileID: 896180981}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

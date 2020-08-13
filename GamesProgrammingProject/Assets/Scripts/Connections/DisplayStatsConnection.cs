@@ -1,21 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DisplayStatsConnection : MonoBehaviour
 {
 
-    public (string, string) GetAchievementInfoFromDB(EAchievements eAchievements)
+    public async Task<(string, string)> GetAchievementInfoFromDBAsync(EAchievements eAchievements)
     {
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         string achieveName = "";
         string achieveDesc = "";
         string selectQuery = "SELECT name, description FROM Achievements WHERE achievementID = @aID;";
         ConnectionManager.CreateNamedParamater("@aID", (int)eAchievements, dbCommand);
         dbCommand.CommandText = selectQuery;
-        IDataReader reader = dbCommand.ExecuteReader();
+        Task<DbDataReader> readerTask = dbCommand.ExecuteReaderAsync();
+        DbDataReader reader = await readerTask;
 
         while (reader.Read())
         {
@@ -30,18 +32,19 @@ public class DisplayStatsConnection : MonoBehaviour
         return (achieveName, achieveDesc);
     }
 
-    public (float, float) GetPlayerUnlockInfoFromDB(EAchievements achievement)
+    public async Task<(float, float)> GetPlayerUnlockInfoFromDBAsync(EAchievements achievement)
     {
         float totalPlayers = -1;
         float unlockedPlayers = -1;
 
 
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         //Get total # of players with achievement logs
         string selectQuery = "SELECT count(DISTINCT(playerID)) FROM PlayerAchievements;";
         dbCommand.CommandText = selectQuery;
+        Task<DbDataReader> readerTask = dbCommand.ExecuteReaderAsync();
 
-        IDataReader reader = dbCommand.ExecuteReader();
+        DbDataReader reader = await readerTask;
         while (reader.Read())
         {
             totalPlayers = reader.GetInt64(0);
@@ -56,7 +59,8 @@ public class DisplayStatsConnection : MonoBehaviour
 
         dbCommand.CommandText = selectQuery;
 
-        IDataReader reader2 = dbCommand.ExecuteReader();
+        Task<DbDataReader> readerTask2 = dbCommand.ExecuteReaderAsync();
+        DbDataReader reader2 = await readerTask2;
         while (reader2.Read())
         {
             unlockedPlayers = reader2.GetInt64(0);
@@ -68,15 +72,17 @@ public class DisplayStatsConnection : MonoBehaviour
         return (unlockedPlayers, totalPlayers);
     }
 
-    public void QueryRankingStat(EUserStats userStat, List<string> usernames, IList statList)
+    public async Task QueryRankingStatAsync(EUserStats userStat, List<string> usernames, IList statList)
     {
         ConnectionManager.GetCMInstance();
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         //Variables don't seem to work with the formating for this query.
         string selectQuery = "SELECT UserStats." + userStat.ToString() + ", UserAccounts.username FROM UserStats INNER JOIN UserAccounts ON UserStats.UserID = UserAccounts.ID ORDER BY " + userStat.ToString() + " desc;";
         dbCommand.CommandText = selectQuery;
-        IDataReader reader = dbCommand.ExecuteReader();
-        while (reader.Read())
+        Task<DbDataReader> readerTask = dbCommand.ExecuteReaderAsync();
+        DbDataReader reader = await readerTask;
+
+        while (await reader.ReadAsync())
         {
             switch (userStat)
             {
@@ -99,15 +105,4 @@ public class DisplayStatsConnection : MonoBehaviour
         dbCommand.Dispose();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

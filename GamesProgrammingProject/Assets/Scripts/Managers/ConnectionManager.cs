@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Data;
+using System.Data.Common;
 using Mono.Data.Sqlite;
 using System.Threading;
 using System.Dynamic;
@@ -13,7 +13,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 public sealed class ConnectionManager
 {
     private readonly string _internalConnectionString = "URI=file:" + Application.dataPath + "/GameDB.db";
-    public readonly IDbConnection _dbConnection;
+    public readonly DbConnection _dbConnection;
 
     #region Singleton Implementation
     private static ConnectionManager _connectionManagerInstance;
@@ -61,7 +61,7 @@ public sealed class ConnectionManager
         _connectionManagerInstance._dbConnection.Close();
     }
 
-    public static IDbConnection GetConnection()
+    public static DbConnection GetConnection()
     {
         try
         {
@@ -75,23 +75,18 @@ public sealed class ConnectionManager
     }
 
     /// <summary>
-    /// Utility: Quickly builds a new generic paramater and adds it to a specified IdbCommand class.
+    /// Utility: Quickly builds a new generic paramater and adds it to a specified DbCommand class.
     /// </summary>
     /// <param name="parameterName">The desired SQL parameter name.</param> 
     /// <param name="parameterValue">The value to assign to the parameter.</param>
-    /// <param name="dbCommand">The IDbCommand object this parameter is associated with.</param> 
-    public static void CreateNamedParamater(string parameterName, object parameterValue, IDbCommand dbCommand)
+    /// <param name="dbCommand">The DbCommand object this parameter is associated with.</param> 
+    public static void CreateNamedParamater(string parameterName, object parameterValue, DbCommand dbCommand)
     {
-        IDataParameter parameter = dbCommand.CreateParameter();
+        DbParameter parameter = dbCommand.CreateParameter();
         parameter.ParameterName = parameterName;
         parameter.Value = parameterValue;
         dbCommand.Parameters.Add(parameter);
     }
-
-    //public static async Task<long> AsyncQueryTimeNow()
-    //{
-    //    return await QueryCurrentTime();
-    //}
 
     /// <summary>
     /// Queries the database for the current time.
@@ -100,10 +95,13 @@ public sealed class ConnectionManager
     public static async Task<long> AsyncQueryTimeNow()
     {
         //OpenInstanceConnection();
-        IDbCommand dbCommand = GetConnection().CreateCommand();
+        DbCommand dbCommand = GetConnection().CreateCommand();
         string selectQueryTimeNow = "SELECT strftime('%s','now');";
         dbCommand.CommandText = selectQueryTimeNow;
-        IDataReader reader = await Task.FromResult(dbCommand.ExecuteReader());
+
+        Task<DbDataReader> readerTask = dbCommand.ExecuteReaderAsync();
+
+        DbDataReader reader = await readerTask;
 
         long time = -1;
         while(reader.Read())

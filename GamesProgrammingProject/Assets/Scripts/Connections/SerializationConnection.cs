@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -12,7 +12,7 @@ public class SerializationConnection : MonoBehaviour
 
     public GameObject playerObject;
 
-    public async Task AsyncSaveFullPlayerStatus()
+    public async Task SaveFullPlayerStatusAsync()
     {
 
         var playerPos = playerObject.GetComponent<Transform>().position;
@@ -22,7 +22,7 @@ public class SerializationConnection : MonoBehaviour
 
         //ConnectionManager.OpenInstanceConnection();
         
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         ConnectionManager.CreateNamedParamater("@posX", playerPos.x, dbCommand);
         ConnectionManager.CreateNamedParamater("@posY", playerPos.y, dbCommand);
         ConnectionManager.CreateNamedParamater("@posZ", playerPos.z, dbCommand);
@@ -31,7 +31,7 @@ public class SerializationConnection : MonoBehaviour
 
         dbCommand.CommandText = updateQuery;
 
-        await Task.FromResult(dbCommand.ExecuteNonQuery());
+        await Task.Run(() => dbCommand.ExecuteNonQuery());
 
         dbCommand.Dispose();
         
@@ -39,29 +39,30 @@ public class SerializationConnection : MonoBehaviour
 
     }
 
-    public async Task AsyncSavePlayerGoldStatus()
-    {
-        var playerGold = playerObject.GetComponent<PlayerData>().GetGoldHeld();
 
-        string updateQuery = "UPDATE PlayerStatus SET goldCount = @currentGold WHERE playerID = @id;";
+    //public async Task AsyncSavePlayerGoldStatus()
+    //{
+    //    var playerGold = playerObject.GetComponent<PlayerData>().GetGoldHeld();
 
-        //ConnectionManager.OpenInstanceConnection();
+    //    string updateQuery = "UPDATE PlayerStatus SET goldCount = @currentGold WHERE playerID = @id;";
 
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
-        ConnectionManager.CreateNamedParamater("@currentGold", playerGold, dbCommand);
-        ConnectionManager.CreateNamedParamater("@id", UserSessionManager.GetID(), dbCommand);
+    //    //ConnectionManager.OpenInstanceConnection();
 
-        dbCommand.CommandText = updateQuery;
+    //    DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+    //    ConnectionManager.CreateNamedParamater("@currentGold", playerGold, dbCommand);
+    //    ConnectionManager.CreateNamedParamater("@id", UserSessionManager.GetID(), dbCommand);
 
-        await Task.FromResult(dbCommand.ExecuteNonQuery());
+    //    dbCommand.CommandText = updateQuery;
 
-        dbCommand.Dispose();
+    //    await Task.FromResult(dbCommand.ExecuteNonQuery());
 
-        //ConnectionManager.CloseInstanceConnection();
-    }
+    //    dbCommand.Dispose();
+
+    //    //ConnectionManager.CloseInstanceConnection();
+    //}
 
 
-    public void LoadPlayerStatus()
+    async public Task LoadPlayerStatusAsync()
     {
         //Default pos
         Vector3 loadPos = new Vector3(150, 1, 150);
@@ -70,12 +71,13 @@ public class SerializationConnection : MonoBehaviour
 
         //ConnectionManager.OpenInstanceConnection();
 
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         ConnectionManager.CreateNamedParamater("@id", UserSessionManager.GetID(), dbCommand);
 
         dbCommand.CommandText = selectQuery;
 
-        IDataReader reader = dbCommand.ExecuteReader();
+        Task<DbDataReader> readerTask = dbCommand.ExecuteReaderAsync();
+        DbDataReader reader = await readerTask;
 
         while (reader.Read())
         {
@@ -103,15 +105,4 @@ public class SerializationConnection : MonoBehaviour
 
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

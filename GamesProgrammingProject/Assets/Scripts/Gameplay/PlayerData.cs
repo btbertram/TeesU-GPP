@@ -20,28 +20,12 @@ public class PlayerData : MonoBehaviour
         return goldHeld;
     }
 
-    public async Task AsyncUpdatePlayerDataTable()
-    {
-        await new Task(() => { UpdatePlayerQuery(); });
-            
-    }
-
-    void LoadPlayerData()
-    {
-        _sConnection.LoadPlayerStatus();
-    }
-     
-    void UpdatePlayerQuery()
-    {
-        
-    } 
-
     // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
         ConnectionManager.GetCMInstance();
         _sConnection = GameObject.FindObjectOfType<SerializationConnection>();
-        LoadPlayerData();
+        await _sConnection.LoadPlayerStatusAsync();
     }
 
     // Update is called once per frame

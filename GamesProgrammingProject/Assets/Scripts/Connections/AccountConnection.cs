@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Data;
+using System.Data.Common;
 using Mono.Data.Sqlite;
 using System.Security.Cryptography;
 /// <summary>
@@ -11,29 +11,6 @@ using System.Security.Cryptography;
 public class AccountConnection : MonoBehaviour
 {
 
-    #region Async Wrappers
-    public async Task<BoolStringResult> CreateAccountAsync(string username, string passcode)
-    {
-        //Debug: Wait for two seconds
-        await Task.Delay(50);
-
-        var result = await CreateAccount(username, passcode);
-
-        return result;
-    }
-
-    public async Task<BoolStringResult> VerifyAccountAsync(string username, string passcode)
-    {
-        //Wait for a fraction of a second, or Unity doesn't have time to fire other events.
-        await Task.Delay(50);
-        var result = await Task.FromResult<BoolStringResult>(VerifyAccount(username, passcode));
-        await Task.Delay(50);
-
-        return result;
-    }
-
-    #endregion
-
     /// <summary>
     /// Inserts a new User Account into the SQLite database.
     /// Uses SQL parameters, guid salts, and hash for basic security.
@@ -41,18 +18,17 @@ public class AccountConnection : MonoBehaviour
     /// <param name="newUsername">The user supplied name for the new account.</param>
     /// <param name="newPasscode">The user supplied passcode for the new account.</param>
     /// <param name="dbConnection">The database connection object for the database in use.</param>
-    public async Task<BoolStringResult> CreateAccount(string newUsername, string newPasscode)
+    public async Task<BoolStringResult> CreateAccountAsync(string newUsername, string newPasscode)
     {
         BoolStringResult result;
-
-        //Test username
         result = InputQuickExit(newUsername, newPasscode);
         if (!result._successful)
         {
             return result;
         }
 
-        result = await Task.FromResult<BoolStringResult>(TestUsernameAvailability(newUsername));
+        result = await TestUsernameAvailabilityAsync(newUsername);
+
         if (!result._successful)
         {
             return result;
@@ -82,7 +58,7 @@ public class AccountConnection : MonoBehaviour
 
         //ConnectionManager.OpenInstanceConnection();
 
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
 
         ConnectionManager.CreateNamedParamater("@newUsername", newUsername, dbCommand);
         ConnectionManager.CreateNamedParamater("@finalHash", finalHash, dbCommand);
@@ -92,7 +68,7 @@ public class AccountConnection : MonoBehaviour
         ///ExecuteNonQuery returns # of rows affected by command when-
         ///command is a UPDATE, INSERT, or DELETE.
         ///-1 is returned when any other command is used.
-        int returnVal = await Task.FromResult(dbCommand.ExecuteNonQuery());
+        int returnVal = await dbCommand.ExecuteNonQueryAsync();
 
         dbCommand.Dispose();
 
@@ -100,8 +76,13 @@ public class AccountConnection : MonoBehaviour
 
         if (returnVal == 1)
         {
+
             //Check if newly created account works
-            result = await VerifyAccountAsync(newUsername, newPasscode);
+            Task<BoolStringResult> verifyTask = VerifyAccountAsync(newUsername, newPasscode);
+            result = await verifyTask;
+
+            Debug.Log("Verified");
+
             if (result._successful)
             {
                 //We add new UserStat row based on user/ID
@@ -109,42 +90,44 @@ public class AccountConnection : MonoBehaviour
                 string selectQuery = "SELECT ID FROM UserAccounts WHERE username = @username;";
 
                 //ConnectionManager.OpenInstanceConnection();
-                IDbCommand dbCommandVerify = ConnectionManager.GetConnection().CreateCommand();
+                DbCommand dbCommandAccountSetup = ConnectionManager.GetConnection().CreateCommand();
 
-                ConnectionManager.CreateNamedParamater("@username", newUsername, dbCommandVerify);
-                dbCommandVerify.CommandText = selectQuery;
+                ConnectionManager.CreateNamedParamater("@username", newUsername, dbCommandAccountSetup);
+                dbCommandAccountSetup.CommandText = selectQuery;
+                Task<DbDataReader> readerTask = dbCommandAccountSetup.ExecuteReaderAsync();
                 int uid = -1;
 
-                IDataReader reader = dbCommandVerify.ExecuteReader();
+                DbDataReader reader = await readerTask;
+
                 while (reader.Read())
                 {
                     uid = reader.GetInt32(0);
                 }
                 reader.Close();
-                reader.Dispose();
+                reader.Dispose();            
 
-                ConnectionManager.CreateNamedParamater("@uid", uid, dbCommandVerify);
+                ConnectionManager.CreateNamedParamater("@uid", uid, dbCommandAccountSetup);
+
+                Debug.Log("Adding new user info");
+                Debug.Log(uid);
 
                 insertQuery = "INSERT into UserStats(userID, username) VALUES(@uid, @username);";
-
-                dbCommandVerify.CommandText = insertQuery;
-                await Task.FromResult(dbCommandVerify.ExecuteNonQuery());
+                dbCommandAccountSetup.CommandText = insertQuery;
+                await Task.Run(() => dbCommandAccountSetup.ExecuteNonQueryAsync());
 
                 insertQuery = "INSERT into PlayerStatus(playerID) VALUES(@uid);";
+                dbCommandAccountSetup.CommandText = insertQuery;
+                await Task.Run(() => dbCommandAccountSetup.ExecuteNonQueryAsync());
 
-                dbCommandVerify.CommandText = insertQuery;
-
-                await Task.FromResult(dbCommandVerify.ExecuteNonQuery());
-
-                for(int x = 0; x < (int)EAchievements.Error; x++)
+                for (int x = 0; x < (int)EAchievements.Error; x++)
                 {
                     int achieveID = x;
                     insertQuery = "INSERT into PlayerAchievements(playerID, achievementID, unlocked) VALUES(@uid, " + x + ", 0);";
-                    dbCommandVerify.CommandText = insertQuery;
-                    await Task.FromResult(dbCommandVerify.ExecuteNonQuery());
+                    dbCommandAccountSetup.CommandText = insertQuery;
+                    await Task.Run(() => dbCommandAccountSetup.ExecuteNonQueryAsync());
                 }
 
-                dbCommandVerify.Dispose();
+                dbCommandAccountSetup.Dispose();
 
                 //ConnectionManager.CloseInstanceConnection();
 
@@ -164,7 +147,6 @@ public class AccountConnection : MonoBehaviour
             result._stringMessage = "Error during account creation.";
             return result;
         }
-        //DB side - Trigger after insert: Create new User data table
     }
 
     /// <summary>
@@ -175,7 +157,7 @@ public class AccountConnection : MonoBehaviour
     /// <param name="passcode">A user provided passcode for the account.</param>
     /// <param name="dbConnection">The database connection object for the database in use.</param>
     /// <returns>True if the information provided matches the database information, false if it does not.</returns>
-    public BoolStringResult VerifyAccount(string username, string passcode)
+    public async Task<BoolStringResult> VerifyAccountAsync(string username, string passcode)
     {
         BoolStringResult result;
 
@@ -185,18 +167,20 @@ public class AccountConnection : MonoBehaviour
             return result;
         }
 
-
-        SHA256 sHA256 = SHA256.Create();
-        string selectQuerySaltHash = "SELECT salt, hash FROM UserAccounts WHERE username = @username;";
-
         //ConnectionManager.OpenInstanceConnection();
 
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        string selectQuerySaltHash = "SELECT salt, hash FROM UserAccounts WHERE username = @username;";
         ConnectionManager.CreateNamedParamater("@username", username, dbCommand);
         dbCommand.CommandText = selectQuerySaltHash;
-        IDataReader reader = dbCommand.ExecuteReader();
+
+        Task<DbDataReader> readerTask = dbCommand.ExecuteReaderAsync();
+        
+        SHA256 sHA256 = SHA256.Create();
         string salt = "";
         string hash = "";
+
+        DbDataReader reader = await readerTask;  
 
         while (reader.Read())
         {
@@ -265,19 +249,20 @@ public class AccountConnection : MonoBehaviour
         return result;
     }
 
-    private BoolStringResult TestUsernameAvailability(string username)
+    private async Task<BoolStringResult> TestUsernameAvailabilityAsync(string username)
     {
         BoolStringResult result;
 
         //ConnectionManager.OpenInstanceConnection();
 
-        IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+        DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
         ConnectionManager.CreateNamedParamater("@username", username, dbCommand);
 
         string query = "SELECT username FROM UserAccounts WHERE username = @username;";
         dbCommand.CommandText = query;
+        Task<DbDataReader> readerTask = dbCommand.ExecuteReaderAsync();
 
-        IDataReader reader = dbCommand.ExecuteReader();
+        DbDataReader reader = await readerTask;
 
         if (reader.Read())
         {
@@ -308,7 +293,7 @@ public class AccountConnection : MonoBehaviour
         }
     }
 
-    public void GrantAuth(bool verified, string username)
+    public async Task GrantAuthAsync(bool verified, string username)
     {
         if (verified)
         {
@@ -316,10 +301,12 @@ public class AccountConnection : MonoBehaviour
 
             //ConnectionManager.OpenInstanceConnection();
 
-            IDbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
+            DbCommand dbCommand = ConnectionManager.GetConnection().CreateCommand();
             ConnectionManager.CreateNamedParamater("@username", username, dbCommand);
             dbCommand.CommandText = selectQueryID;
-            IDataReader reader = dbCommand.ExecuteReader();
+            Task<DbDataReader> readerTask = dbCommand.ExecuteReaderAsync();
+            DbDataReader reader = await readerTask;
+
             //Temp assigned -1 to prevent data collision
             int tempID = -1;
 
