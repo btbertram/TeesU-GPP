@@ -33,11 +33,11 @@ public class GatheringPoint : MonoBehaviour, IInteractable
         return _type;
     }
 
-    public async void AsyncCheckIfRegrown()
+    public async void CheckIfRegrownAsync()
     {
         if (!_isActive)
         {
-            Task<long> queryNowTimeTask = ConnectionManager.AsyncQueryTimeNow();
+            Task<long> queryNowTimeTask = ConnectionManager.QueryTimeNowAsync();
             Task<long> queryGatherTimeTask = gatheringPointConneciton.QueryGatherTimeAsync(_pointID);
 
             long currenttime = await queryNowTimeTask;
@@ -83,13 +83,13 @@ public class GatheringPoint : MonoBehaviour, IInteractable
         TextFaceCamera();
     }
 
-    public async Task InteractionTriggered()
+    public async Task InteractionTriggeredAsync()
     {
 
         switch (_type)
         {
             case (int)EGatherPointType.GoldGatherType:
-                Task<long> queryTimeTask = ConnectionManager.AsyncQueryTimeNow();
+                Task<long> queryTimeTask = ConnectionManager.QueryTimeNowAsync();
                 _isActive = false;
                 ToggleInteractionText();
                 this.gameObject.GetComponent<MeshRenderer>().enabled = _isActive;
@@ -98,7 +98,7 @@ public class GatheringPoint : MonoBehaviour, IInteractable
                 GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGoldTotal.ToString(), 10);
                 GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGatheringPointsTotal.ToString(), 1);
                 long currentTime = await queryTimeTask;
-                await Task.Run(() => gatheringPointConneciton.AsyncRecordGatherTime(currentTime, _pointID));
+                await Task.Run(() => gatheringPointConneciton.AsyncRecordGatherAsync(currentTime, _pointID));
 
                 break;
 

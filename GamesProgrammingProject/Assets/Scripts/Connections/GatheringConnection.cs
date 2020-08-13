@@ -95,7 +95,7 @@ public class GatheringConnection : MonoBehaviour
     }
 
 
-    public async Task AsyncRecordGatherTime(long currentTime, int gatherPointID)
+    public async Task AsyncRecordGatherAsync(long currentTime, int gatherPointID)
     {
         //long currentTime = 1;
         //long currentTime = await ConnectionManager.AsyncQueryTimeNow();

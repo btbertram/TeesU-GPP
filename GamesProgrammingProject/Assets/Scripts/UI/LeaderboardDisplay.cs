@@ -68,7 +68,7 @@ public class LeaderboardDisplay : MonoBehaviour
         DisplayStatsConnection = FindObjectOfType<DisplayStatsConnection>();
     }
 
-    async Task LeaderBoardContentSetup()
+    async Task LeaderBoardContentSetupAsync()
     {
         switch (eStat)
         {
@@ -97,7 +97,7 @@ public class LeaderboardDisplay : MonoBehaviour
         AssignLeaderDisplayBoxTexts(eStat);
     }
 
-    public async Task RefreshBoard()
+    public async Task RefreshBoardAsync()
     {
         foreach(GameObject box in LeaderRowBoxes)
         {
@@ -107,7 +107,7 @@ public class LeaderboardDisplay : MonoBehaviour
         LeaderRowBoxes.TrimExcess();
         rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
 
-        await LeaderBoardContentSetup();
+        await LeaderBoardContentSetupAsync();
     }
 
     // Update is called once per frame

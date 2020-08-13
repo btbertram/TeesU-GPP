@@ -37,7 +37,7 @@ public class PlayerStats : MonoBehaviour
 
     #region Stat Updaters
 
-    public async Task UpdateGatheringPointsTotal(int amount)
+    public async Task UpdateGatheringPointsTotalAsync(int amount)
     {
         _playerStatBlock.totalGatheringPointsHarvested += amount;
         if(_achieveLogic.CheckUnlockStatus(EAchievements.TotalGathers))
@@ -50,7 +50,7 @@ public class PlayerStats : MonoBehaviour
         
     }
 
-    public async Task UpdateDistanceTotal(float amount)
+    public async Task UpdateDistanceTotalAsync(float amount)
     {
         _playerStatBlock.totalDistanceTraveled += amount;
         if (_achieveLogic.CheckUnlockStatus(EAchievements.DistanceTraveled))
@@ -61,7 +61,7 @@ public class PlayerStats : MonoBehaviour
         await Task.Run(() => _statsConnection.UpdatePlayerStatAsync(EUserStats.distanceTraveled, _playerStatBlock));
     }
 
-    public async Task UpdateGoldTotal(int amount)
+    public async Task UpdateGoldTotalAsync(int amount)
     {
         _playerStatBlock.totalGoldCollected += amount;
         Debug.Log("Total Gold: " + _playerStatBlock.totalGoldCollected);

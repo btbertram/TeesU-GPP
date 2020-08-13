@@ -43,7 +43,7 @@ public class AchievementDisplay : MonoBehaviour
         return newAchieveBox;
     }
 
-    public async Task UpdateUIAchievementStatus()
+    public async Task UpdateUIAchievementStatusAsync()
     {
         if (isPlayerAchieve)
         {
@@ -73,8 +73,6 @@ public class AchievementDisplay : MonoBehaviour
     {
         Task<(float, float)> achievementUnlockInfoTask = DisplayStatsConnection.GetPlayerUnlockInfoFromDBAsync(achievement);
         var texts = AchievementBoxes[(int)achievement].GetComponentsInChildren<Text>();
-
-        await Task.Delay(2000);
 
         (float, float) playerUnlockInfo = await achievementUnlockInfoTask;
         float percentUnlocked = playerUnlockInfo.Item1 / playerUnlockInfo.Item2;

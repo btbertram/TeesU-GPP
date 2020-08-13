@@ -72,10 +72,10 @@ public class ContentHandler : MonoBehaviour
         switch (gameObject.tag)
         {
             case nameof(ETags.LeaderboardContent):
-                await gameObject.GetComponent<LeaderboardDisplay>().RefreshBoard();
+                await gameObject.GetComponent<LeaderboardDisplay>().RefreshBoardAsync();
                 break;
             case nameof(ETags.AchievementContent):
-                await gameObject.GetComponent<AchievementDisplay>().UpdateUIAchievementStatus();
+                await gameObject.GetComponent<AchievementDisplay>().UpdateUIAchievementStatusAsync();
                 break;
             default:
                 break;

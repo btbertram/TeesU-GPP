@@ -21,7 +21,7 @@ public class WorldManager : MonoBehaviour
     {
         foreach (GatheringPoint point in _gatheringPoints)
         {
-            point.AsyncCheckIfRegrown();
+            point.CheckIfRegrownAsync();
         }
     }
 

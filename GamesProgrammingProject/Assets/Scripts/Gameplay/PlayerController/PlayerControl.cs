@@ -41,7 +41,7 @@ public class PlayerControl : MonoBehaviour
 
             var interactable = _interactCollision.GetFirstInteractableFromCollisionCollection();
 
-            interactable.InteractionTriggered();
+            interactable.InteractionTriggeredAsync();
             _interactCollision.ToggleCanInteract();
             _interactCollision.interacters.Remove(_interactCollision.GetFirstInteractableFromCollisionCollection());
 

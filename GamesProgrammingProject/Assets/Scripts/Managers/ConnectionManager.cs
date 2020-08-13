@@ -92,7 +92,7 @@ public sealed class ConnectionManager
     /// Queries the database for the current time.
     /// </summary>
     /// <returns>The current time according to the database, or -1 if no data could be selected.</returns>
-    public static async Task<long> AsyncQueryTimeNow()
+    public static async Task<long> QueryTimeNowAsync()
     {
         //OpenInstanceConnection();
         DbCommand dbCommand = GetConnection().CreateCommand();

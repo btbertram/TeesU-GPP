@@ -5,7 +5,7 @@ using UnityEngine;
 public enum EMessagedFunc
 {
     UpdatePlayerGold,
-    UpdateGoldTotal,
-    UpdateGatheringPointsTotal,
-    UpdateDistanceTotal
+    UpdateGoldTotalAsync,
+    UpdateGatheringPointsTotalAsync,
+    UpdateDistanceTotalAsync
 }

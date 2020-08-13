@@ -8,7 +8,7 @@ public interface IInteractable
     EInteractableType InteractableType { get; set; }
     MeshRenderer TextRenderer { get; set; }
 
-    Task InteractionTriggered();
+    Task InteractionTriggeredAsync();
 
     void ToggleInteractionText();
 

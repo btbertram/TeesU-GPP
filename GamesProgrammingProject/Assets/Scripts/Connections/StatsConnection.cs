@@ -46,7 +46,7 @@ public class StatsConnection : MonoBehaviour
         return statBlock;
     }
 
-    async public Task<PlayerAchievementBlock> GetUserAchievementsFromDBAsync()
+    public async Task<PlayerAchievementBlock> GetUserAchievementsFromDBAsync()
     {
 
         PlayerAchievementBlock achievementBlock = new PlayerAchievementBlock();
