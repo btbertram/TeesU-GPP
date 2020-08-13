@@ -95,8 +95,8 @@ public class GatheringPoint : MonoBehaviour, IInteractable
                 this.gameObject.GetComponent<MeshRenderer>().enabled = _isActive;
                 this.gameObject.GetComponent<BoxCollider>().enabled = _isActive;
                 GameObject.FindObjectOfType<PlayerData>().gameObject.SendMessage(EMessagedFunc.UpdatePlayerGold.ToString(), 10);
-                GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGoldTotal.ToString(), 10);
-                GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGatheringPointsTotal.ToString(), 1);
+                GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGoldTotalAsync.ToString(), 10);
+                GameObject.FindObjectOfType<PlayerStats>().gameObject.SendMessage(EMessagedFunc.UpdateGatheringPointsTotalAsync.ToString(), 1);
                 long currentTime = await queryTimeTask;
                 await Task.Run(() => gatheringPointConneciton.AsyncRecordGatherAsync(currentTime, _pointID));
 

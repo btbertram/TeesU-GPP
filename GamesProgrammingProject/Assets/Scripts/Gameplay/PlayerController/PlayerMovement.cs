@@ -84,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
     void CheckDistanceTraveled()
     {
         float distance = Vector3.Distance(_prevPos, this.transform.position);
-        GameObject.FindObjectOfType<PlayerStats>().SendMessage(EMessagedFunc.UpdateDistanceTotal.ToString(), distance);
+        GameObject.FindObjectOfType<PlayerStats>().SendMessage(EMessagedFunc.UpdateDistanceTotalAsync.ToString(), distance);
         _prevPos = this.transform.position;
     }
 
