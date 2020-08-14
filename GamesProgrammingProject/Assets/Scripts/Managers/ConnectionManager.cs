@@ -12,7 +12,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 
 public sealed class ConnectionManager
 {
-    private readonly string _internalConnectionString = "URI=file:" + Application.dataPath + "/GameDB.db";
+    private readonly string _internalConnectionString = "URI=file:" + Application.streamingAssetsPath + "/GameDB.db";
     public readonly DbConnection _dbConnection;
 
     #region Singleton Implementation
